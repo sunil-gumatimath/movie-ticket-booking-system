@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: movie-ticket-booking-system-api
+  datasource:
+    url: jdbc:mysql://localhost:3306/movie-ticket-booking-application-db?createDatabaseIfNotExist=true
+    username: root
+    password: Sunil@081120
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
