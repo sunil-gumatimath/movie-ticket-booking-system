@@ -12,9 +12,9 @@ public class ApplicationHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorStructure<String>> handleUserExistByEmail(UserExistByEmailException e){
         ErrorStructure<String> errorStructure = ErrorStructure.<String>builder()
-                .type(e.getMessage())
+                .type("User Exit")
                 .status(HttpStatus.NOT_FOUND.value())
-                .message("User Exist")
+                .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(errorStructure,HttpStatus.NOT_FOUND);
     }

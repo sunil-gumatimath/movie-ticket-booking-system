@@ -1,5 +1,6 @@
 package com.example.movieticketbookingsystem.serviceImpl;
 
+import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.entity.TheaterOwner;
 import com.example.movieticketbookingsystem.entity.User;
 import com.example.movieticketbookingsystem.entity.UserDetails;
@@ -10,48 +11,36 @@ import com.example.movieticketbookingsystem.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-
     @Override
-    public UserDetails addUserDetails(UserDetails userDetails) {
-        if (userRepository.existsByEmail(userDetails.getEmail())){
-            throw new UserExistByEmailException("User with Email is already exists");
-        }else if (userDetails.getUserRole() == UserRole.USER){
-            User user = new User();
-
-            user.setUserId(userDetails.getUserId());
-            user.setUsername(userDetails.getUsername());
-            user.setEmail(userDetails.getEmail());
-            user.setPassword(userDetails.getPassword());
-            user.setUserRole(userDetails.getUserRole());
-            user.setPhoneNumber(userDetails.getPhoneNumber());
-            user.setDateOfBirth(userDetails.getDateOfBirth());
-            user.setCreatedAt(userDetails.getCreatedAt());
-            user.setUpdatedAt(userDetails.getUpdatedAt());
-
-            return userRepository.save(user);
-
-        }else{
-            TheaterOwner theaterOwner = new TheaterOwner();
-
-
-            theaterOwner.setUserId(userDetails.getUserId());
-            theaterOwner.setUsername(userDetails.getUsername());
-            theaterOwner.setEmail(userDetails.getEmail());
-            theaterOwner.setPassword(userDetails.getPassword());
-            theaterOwner.setUserRole(userDetails.getUserRole());
-            theaterOwner.setPhoneNumber(userDetails.getPhoneNumber());
-            theaterOwner.setDateOfBirth(userDetails.getDateOfBirth());
-            theaterOwner.setCreatedAt(userDetails.getCreatedAt());
-            theaterOwner.setUpdatedAt(userDetails.getUpdatedAt());
-
-            return userRepository.save(theaterOwner);
-
+    public UserDetails addUserDetails(UserRegisterRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new UserExistByEmailException("User with Email already exists");
         }
+
+        return switch (request.userRole()) {
+            case USER -> saveUser(new User(), request);
+            case THEATER_OWNER -> saveUser(new TheaterOwner(), request);
+        };
+    }
+
+    private UserDetails saveUser(UserDetails target, UserRegisterRequest source) {
+        target.setUserRole(source.userRole());
+        target.setUsername(source.username());
+        target.setEmail(source.email());
+        target.setPassword(source.password());
+        target.setPhoneNumber(source.phoneNumber());
+        target.setDateOfBirth(source.dateOfBirth());
+//        target.setCreatedAt(LocalDateTime.now());
+//        target.setUpdatedAt(LocalDateTime.now());
+
+        return userRepository.save(target);
     }
 }

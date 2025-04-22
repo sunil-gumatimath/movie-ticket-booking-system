@@ -5,12 +5,30 @@ import org.springframework.http.ResponseEntity;
 
 public class RestResponseBuilder {
 
-    public <T>ResponseEntity<ResponseStructure<T>> success(HttpStatus status,String message, T data){
+    public static <T> ResponseEntity<ResponseStructure<T>> success(HttpStatus status, String message, T data) {
         ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
                 .status(status.value())
                 .message(message)
                 .data(data)
                 .build();
         return ResponseEntity.status(status).body(responseStructure);
+    }
+
+    public static <T> ResponseEntity<ResponseStructure<T>> created(String message, T data, int statusCode) {
+        ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
+                .status(statusCode)
+                .message(message)
+                .data(data)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseStructure);
+    }
+
+    public static <T> ResponseEntity<ResponseStructure<T>> ok(String message, T data) {
+        ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .data(data)
+                .build();
+        return ResponseEntity.ok(responseStructure);
     }
 }
