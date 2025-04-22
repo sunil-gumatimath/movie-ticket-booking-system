@@ -1,8 +1,12 @@
 package com.example.movieticketbookingsystem.controller;
 
+import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.entity.UserDetails;
+import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.serviceImpl.UserServiceImpl;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
+import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +23,8 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseStructure<Object>> addUserDetails(@RequestBody UserDetails userDetails){
-
-    UserDetails userDetails1 = userService.addUserDetails(userDetails);
-
-    ResponseStructure<Object> responseStructure = ResponseStructure.builder().status(HttpStatus.CREATED.value())
-            .message("User_Details Object Created").data(userDetails1).build();
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseStructure);
+    public ResponseEntity<ResponseStructure<UserDetails>> addUserDetails(@Valid @RequestBody UserRegisterRequest userDetails) {
+        UserDetails saveDetails = userService.addUserDetails(userDetails);
+        return RestResponseBuilder.created("UserDetail Created", saveDetails, HttpStatus.CREATED.value());
     }
 }
