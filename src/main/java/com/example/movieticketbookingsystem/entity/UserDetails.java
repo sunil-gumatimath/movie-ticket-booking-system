@@ -2,6 +2,7 @@ package com.example.movieticketbookingsystem.entity;
 
 import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 public class UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
     private String username;
     private String email;
