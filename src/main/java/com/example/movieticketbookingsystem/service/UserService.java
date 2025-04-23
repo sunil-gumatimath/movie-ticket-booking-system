@@ -1,8 +1,8 @@
 package com.example.movieticketbookingsystem.service;
 
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
-import com.example.movieticketbookingsystem.entity.UserDetails;
+import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
 
 public interface UserService {
-    UserDetails addUserDetails(UserRegisterRequest userDetails);
+    UserRegisterResponse addUserDetails(UserRegisterRequest userDetails);
 }
