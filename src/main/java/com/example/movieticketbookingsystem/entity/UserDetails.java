@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -31,11 +32,19 @@ public class UserDetails {
     private Long createdAt;
     private Long updatedAt;
 
+    private boolean isDeleted = false;
+    private Instant deleteAt;
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt != null ? updatedAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
+    }
+
+    public void softDelete(){
+        this.isDeleted = true;
+        this.deleteAt = Instant.now();
     }
 }
