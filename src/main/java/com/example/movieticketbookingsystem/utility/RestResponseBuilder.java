@@ -23,7 +23,7 @@ public class RestResponseBuilder {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseStructure);
     }
 
-    public static <T> ResponseEntity<ResponseStructure<T>> ok(String message, T data) {
+    public static <T> ResponseEntity<ResponseStructure<T>> ok(String message, T data, int value) {
         ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
                 .status(HttpStatus.OK.value())
                 .message(message)

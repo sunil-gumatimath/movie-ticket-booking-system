@@ -6,5 +6,4 @@ public record UserRegisterResponse(
         String userId,
         String username,
         String email,
-        UserRole userRole)
-        {}
+        UserRole userRole) {}
