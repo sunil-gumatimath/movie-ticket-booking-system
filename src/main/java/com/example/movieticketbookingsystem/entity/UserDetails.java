@@ -2,11 +2,11 @@ package com.example.movieticketbookingsystem.entity;
 
 import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,6 +17,7 @@ public class UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
+
     private String username;
     private String email;
     private String password;
@@ -26,7 +27,15 @@ public class UserDetails {
 
     private String phoneNumber;
     private LocalDate dateOfBirth;
+
     private Long createdAt;
     private Long updatedAt;
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt != null ? updatedAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
+    }
 }
