@@ -31,4 +31,8 @@ public class UserController {
         UserRegisterResponse updateUser = userService.updateUser(email,userRequest);
         return RestResponseBuilder.ok("User profile updated successfully",updateUser,HttpStatus.OK.value());
     }
+
+    public ResponseEntity<String> deleteUser(@RequestParam String email){
+
+    }
 }
