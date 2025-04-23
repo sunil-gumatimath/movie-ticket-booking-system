@@ -1,6 +1,7 @@
 package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
+import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
 import com.example.movieticketbookingsystem.entity.UserDetails;
 import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.serviceImpl.UserServiceImpl;
@@ -17,14 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/user-details")
 public class UserController {
 
     private final UserServiceImpl userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseStructure<UserDetails>> addUserDetails(@Valid @RequestBody UserRegisterRequest userDetails) {
-        UserDetails saveDetails = userService.addUserDetails(userDetails);
+    public ResponseEntity<ResponseStructure<UserRegisterResponse>> addUserDetails(@Valid @RequestBody UserRegisterRequest userDetails) {
+        UserRegisterResponse saveDetails = userService.addUserDetails(userDetails);
         return RestResponseBuilder.created("UserDetail Created", saveDetails, HttpStatus.CREATED.value());
     }
 }
