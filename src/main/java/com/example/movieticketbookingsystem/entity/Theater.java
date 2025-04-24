@@ -1,7 +1,6 @@
 package com.example.movieticketbookingsystem.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +18,8 @@ public class Theater {
     private Long createdAt;
     private String updatedAt;
     private String createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "theater_owner_id")
+    private TheaterOwner owner;
 }

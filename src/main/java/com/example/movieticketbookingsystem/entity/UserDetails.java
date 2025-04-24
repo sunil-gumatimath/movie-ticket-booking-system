@@ -37,6 +37,7 @@ public class UserDetails {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    private TheaterOwner theaterOwner;
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
