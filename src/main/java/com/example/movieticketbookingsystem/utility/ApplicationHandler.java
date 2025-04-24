@@ -3,6 +3,7 @@ package com.example.movieticketbookingsystem.utility;
 import com.example.movieticketbookingsystem.exception.UserExistByEmailException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,4 +19,5 @@ public class ApplicationHandler {
                 .build();
         return new ResponseEntity<>(errorStructure,HttpStatus.NOT_FOUND);
     }
+
 }
