@@ -13,5 +13,4 @@ public class ErrorStructure<T> {
     private String type;
     private int status;        //404
     private String message;         // failed to update the user (error message)
-
 }

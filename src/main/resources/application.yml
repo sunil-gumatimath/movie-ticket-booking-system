@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/movie-ticket-booking-application-db?createDatabaseIfNotExist=true
     username: root
-    password: Sunil@081120
+    password: root
   jpa:
     open-in-view: false
     show-sql: true

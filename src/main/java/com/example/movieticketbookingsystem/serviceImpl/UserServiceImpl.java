@@ -6,7 +6,6 @@ import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
 import com.example.movieticketbookingsystem.entity.TheaterOwner;
 import com.example.movieticketbookingsystem.entity.User;
 import com.example.movieticketbookingsystem.entity.UserDetails;
-import com.example.movieticketbookingsystem.enums.UserRole;
 import com.example.movieticketbookingsystem.exception.UserExistByEmailException;
 import com.example.movieticketbookingsystem.exception.UserNotRegistered;
 import com.example.movieticketbookingsystem.repository.UserRepository;
@@ -14,7 +13,7 @@ import com.example.movieticketbookingsystem.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -68,5 +67,18 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(),
                 user.getUserRole()
         );
+    }
+
+    @Override
+    public void softDelete(String email) {
+        UserDetails user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotRegistered("User not found with email: " + email));
+
+        if (user.isDeleted()) {
+            throw new IllegalStateException("User already deleted.");
+        }
+        user.setDeleted(true);
+        user.setDeletedAt(Instant.now());
+        userRepository.save(user);
     }
 }

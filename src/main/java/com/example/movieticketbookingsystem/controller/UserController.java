@@ -32,7 +32,9 @@ public class UserController {
         return RestResponseBuilder.ok("User profile updated successfully",updateUser,HttpStatus.OK.value());
     }
 
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestParam String email){
-
+        userService.softDelete(email);
+        return ResponseEntity.ok("User account deleted successfully (soft delete).");
     }
 }
