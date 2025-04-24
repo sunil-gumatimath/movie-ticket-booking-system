@@ -32,8 +32,11 @@ public class UserDetails {
     private Long createdAt;
     private Long updatedAt;
 
+    @Column(name = "is_deleted")
     private boolean isDeleted = false;
-    private Instant deleteAt;
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
@@ -43,8 +46,11 @@ public class UserDetails {
         this.updatedAt = updatedAt != null ? updatedAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
     }
 
+
     public void softDelete(){
         this.isDeleted = true;
-        this.deleteAt = Instant.now();
+        this.deletedAt = Instant.now();
     }
+
+
 }

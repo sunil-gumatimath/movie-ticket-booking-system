@@ -8,4 +8,6 @@ public interface UserService {
     UserRegisterResponse addUserDetails(UserRegisterRequest userDetails);
 
     UserRegisterResponse updateUser(String email, UserRequest userRequest);
+
+    void softDelete(String email);
 }
