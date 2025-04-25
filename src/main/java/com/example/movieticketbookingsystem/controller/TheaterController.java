@@ -27,13 +27,14 @@ public class TheaterController {
     }
 
     @GetMapping("/theater/id")
-    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id,TheaterRequest theaterRequest){
-        TheaterResponse findTheater = theaterService.findTheater(id,theaterRequest);
+    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id){
+        TheaterResponse findTheater = theaterService.findTheater(id);
         return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, TheaterRequest theaterRequest){
+    @PutMapping("/theater/update")
+    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, @RequestBody TheaterRequest theaterRequest){
         TheaterResponse updateTheater = theaterService.updateTheater(id,theaterRequest);
-        return RestResponseBuilder.ok("Theater Found",updateTheater,HttpStatus.OK);
+        return RestResponseBuilder.ok("Theater Updated",updateTheater,HttpStatus.OK);
     }
 }
