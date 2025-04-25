@@ -9,7 +9,7 @@ public interface TheaterService {
 
     public TheaterResponse createTheater(@Valid String email, TheaterRequest theaterRequest);
 
-    TheaterResponse findTheater(@Valid String id, TheaterRequest theaterRequest);
+    TheaterResponse findTheater(@Valid String id);
 
     TheaterResponse updateTheater(@Valid String id, TheaterRequest theaterRequest);
 }

@@ -69,7 +69,7 @@ public class TheaterServiceImpl implements TheaterService {
 }
 
     @Override
-    public TheaterResponse findTheater(String id, TheaterRequest theaterRequest) {
+    public TheaterResponse findTheater(String id) {
         Theater theater = theaterRepository.findById(id)
                 .orElseThrow(() -> new TheaterOwnerIdException("Theater not found with id: " + id));
 
@@ -80,7 +80,6 @@ public class TheaterServiceImpl implements TheaterService {
                 theater.getLandmark()
         );
     }
-
 
     @Override
     public TheaterResponse updateTheater(String id, TheaterRequest theaterRequest) {

@@ -27,8 +27,8 @@ public class TheaterController {
     }
 
     @GetMapping("/theater/id")
-    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id,TheaterRequest theaterRequest){
-        TheaterResponse findTheater = theaterService.findTheater(id,theaterRequest);
+    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id){
+        TheaterResponse findTheater = theaterService.findTheater(id);
         return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
     }
 
