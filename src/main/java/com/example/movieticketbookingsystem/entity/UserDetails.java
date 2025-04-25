@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@Entity
-public class UserDetails {
+@Entity // VERY IMPORTANT
+public abstract class UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,8 +37,6 @@ public class UserDetails {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    private TheaterOwner theaterOwner;
-
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
     }
@@ -47,11 +45,8 @@ public class UserDetails {
         this.updatedAt = updatedAt != null ? updatedAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
     }
 
-
     public void softDelete(){
         this.isDeleted = true;
         this.deletedAt = Instant.now();
     }
-
-
 }
