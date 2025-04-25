@@ -32,8 +32,9 @@ public class TheaterController {
         return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
     }
 
-    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, TheaterRequest theaterRequest){
+    @PutMapping("/theater/update")
+    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, @RequestBody TheaterRequest theaterRequest){
         TheaterResponse updateTheater = theaterService.updateTheater(id,theaterRequest);
-        return RestResponseBuilder.ok("Theater Found",updateTheater,HttpStatus.OK);
+        return RestResponseBuilder.ok("Theater Updated",updateTheater,HttpStatus.OK);
     }
 }

@@ -16,7 +16,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -81,9 +80,32 @@ public class TheaterServiceImpl implements TheaterService {
         );
     }
 
+
     @Override
-    public TheaterResponse updateTheater(String id, TheaterRequest theaterRequest) {
-        return null;
+    public TheaterResponse updateTheater(String id, TheaterRequest updatedTheater) {
+        // Fetch the theater by ID
+        Theater existingTheater = theaterRepository.findById(id)
+                .orElseThrow(() -> new TheaterOwnerIdException("Theater not found with the provided ID!"));
+
+        // Update theater fields with the provided data
+        existingTheater.setName(updatedTheater.name());
+        existingTheater.setAddress(updatedTheater.address());
+        existingTheater.setCity(updatedTheater.city());
+        existingTheater.setLandmark(updatedTheater.landmark());
+        existingTheater.setUpdatedAt(System.currentTimeMillis());
+
+        // Save the updated theater back to the repository
+        theaterRepository.save(existingTheater);
+
+        // Return success message
+        return new TheaterResponse(
+                existingTheater.getName(),
+                existingTheater.getAddress(),
+                existingTheater.getCity(),
+                existingTheater.getLandmark()
+
+        );
     }
+
 
 }
