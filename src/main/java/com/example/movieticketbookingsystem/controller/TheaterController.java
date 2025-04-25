@@ -9,6 +9,7 @@ import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +24,16 @@ public class TheaterController {
     public ResponseEntity<ResponseStructure<TheaterResponse>> createTheater(@RequestBody TheaterRequest theaterRequest, @Valid @RequestParam String email) {
         TheaterResponse createTheater = theaterService.createTheater(email, theaterRequest);
         return RestResponseBuilder.created("Theater Created", createTheater, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/theater/id")
+    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id,TheaterRequest theaterRequest){
+        TheaterResponse findTheater = theaterService.findTheater(id,theaterRequest);
+        return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, TheaterRequest theaterRequest){
+        TheaterResponse updateTheater = theaterService.updateTheater(id,theaterRequest);
+        return RestResponseBuilder.ok("Theater Found",updateTheater,HttpStatus.OK);
     }
 }
