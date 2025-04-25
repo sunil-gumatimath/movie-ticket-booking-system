@@ -1,15 +1,21 @@
 package com.example.movieticketbookingsystem.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Table(name = "theater_owner")
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
-public class TheaterOwner extends UserDetails{
+public class TheaterOwner extends UserDetails {
 
-    @OneToMany(mappedBy = "owner",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Theater> theaters = new ArrayList<>();
+
 }

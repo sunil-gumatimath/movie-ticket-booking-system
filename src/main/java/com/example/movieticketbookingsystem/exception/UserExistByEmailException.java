@@ -8,7 +8,6 @@ import lombok.Setter;
 public class UserExistByEmailException extends RuntimeException {
 
     public UserExistByEmailException(String message) {
-
         super(message);
     }
 }

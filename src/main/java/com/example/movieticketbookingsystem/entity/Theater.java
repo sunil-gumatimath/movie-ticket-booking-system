@@ -4,22 +4,32 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Entity
 public class Theater {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String theaterId;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
     private String city;
+
+    @Column(nullable = false)
     private String landmark;
+
     private Long createdAt;
-    private String updatedAt;
+    private Long updatedAt;
     private String createdBy;
 
-    @ManyToOne
-    @JoinColumn(name = "theater_owner_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theater_owner_id", nullable = false)
     private TheaterOwner owner;
 }

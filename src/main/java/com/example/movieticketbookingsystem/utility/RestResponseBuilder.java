@@ -14,18 +14,18 @@ public class RestResponseBuilder {
         return ResponseEntity.status(status).body(responseStructure);
     }
 
-    public static <T> ResponseEntity<ResponseStructure<T>> created(String message, T data, int statusCode) {
+    public static <T> ResponseEntity<ResponseStructure<T>> created(String message, T data, HttpStatus status) {
         ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
-                .status(statusCode)
+                .status(status.value())
                 .message(message)
                 .data(data)
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(responseStructure);
     }
 
-    public static <T> ResponseEntity<ResponseStructure<T>> ok(String message, T data, int value) {
+    public static <T> ResponseEntity<ResponseStructure<T>> ok(String message, T data, HttpStatus status) {
         ResponseStructure<T> responseStructure = ResponseStructure.<T>builder()
-                .status(HttpStatus.OK.value())
+                .status(status.value())
                 .message(message)
                 .data(data)
                 .build();
