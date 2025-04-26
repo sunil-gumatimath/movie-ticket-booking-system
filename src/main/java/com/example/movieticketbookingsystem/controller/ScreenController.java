@@ -2,8 +2,7 @@ package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.ScreenRequest;
 import com.example.movieticketbookingsystem.dto.response.ScreenResponse;
-import com.example.movieticketbookingsystem.entity.Screen;
-import com.example.movieticketbookingsystem.entity.Theater;
+import com.example.movieticketbookingsystem.dto.response.ScreenResponseList;
 import com.example.movieticketbookingsystem.serviceImpl.ScreenServiceImpl;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
@@ -26,8 +25,8 @@ public class ScreenController {
     }
 
     @GetMapping("/screen/id")
-    public ResponseEntity<ResponseStructure<ScreenResponse>> findScreen(@Valid @RequestParam String screenId,@RequestBody ScreenRequest screenRequest){
-        ScreenResponse findScreen = screenService.findScreen(screenId,screenRequest);
+    public ResponseEntity<ResponseStructure<ScreenResponseList>> findScreen(@Valid @RequestParam String screenId){
+        ScreenResponseList findScreen = screenService.findScreen(screenId);
         return RestResponseBuilder.ok("Screen Found",findScreen,HttpStatus.OK);
     }
 }

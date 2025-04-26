@@ -2,7 +2,10 @@ package com.example.movieticketbookingsystem.serviceImpl;
 
 import com.example.movieticketbookingsystem.dto.request.ScreenRequest;
 import com.example.movieticketbookingsystem.dto.response.ScreenResponse;
+import com.example.movieticketbookingsystem.dto.response.ScreenResponseList;
+import com.example.movieticketbookingsystem.dto.response.SeatResponse;
 import com.example.movieticketbookingsystem.entity.Screen;
+import com.example.movieticketbookingsystem.entity.Seat;
 import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.exception.ScreenIdNotFoundException;
 import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
@@ -29,7 +32,7 @@ public class ScreenServiceImpl implements ScreenService {
         Optional<Theater> theaterOptional = theaterRepository.findById(theaterId);
 
         if (theaterOptional.isEmpty()){
-            throw new TheaterOwnerIdException("Theater id Not Found");
+            throw new TheaterOwnerIdException("Theater is not Found with "+theaterId);
         }else {
             Theater theater = theaterOptional.get();
             Screen screen = new Screen();
@@ -48,28 +51,41 @@ public class ScreenServiceImpl implements ScreenService {
 
             seatService.generateSeatLayout(screen);
 
-
             return new ScreenResponse(
                     screen.getScreenType(),
                     screen.getCapacity(),
                     screen.getNoOfRows()
             );
         }
-
     }
 
     @Override
-    public ScreenResponse findScreen(String screenId, ScreenRequest screenRequest) {
-        Optional<Screen> screen = screenRepository.findById(screenId);
+    public ScreenResponseList findScreen(String screenId) {
+        Optional<Screen> optionalScreen = screenRepository.findById(screenId);
 
-        if (screen.isEmpty()){
+        if (optionalScreen.isEmpty()){
             throw new ScreenIdNotFoundException("Screen Id Not Found ");
         }else {
-            Screen screen1 = screen.get();
-            return new ScreenResponse(
-                    screen1.getScreenType(),
-                    screen1.getCapacity(),
-                    screen1.getNoOfRows()
+            Screen screen = optionalScreen.get();
+            List<Seat> seatList = screen.getSeat();
+
+            if (seatList == null){
+                seatList = new ArrayList<>();
+            }
+
+            System.out.println("Found screen: " + screen.getScreenType());
+            System.out.println("Seats: " + seatList.size());
+            seatList.forEach(seat -> System.out.println(seat.getSeatName()));
+
+            List<SeatResponse> seatResponses = seatList.stream().map(seat -> new SeatResponse(seat.getSeatId(),seat.getSeatName())).toList();
+
+
+
+            return new ScreenResponseList(
+                    screen.getScreenType(),
+                    screen.getCapacity(),
+                    screen.getNoOfRows(),
+                    seatResponses
             );
         }
     }

@@ -15,5 +15,6 @@ public record ScreenResponse(
         @NotNull(message = "Number of rows must not be null")
         @Min(value = 1, message = "Number of rows must be at least 1")
         Integer noOfRows
+
 ) {
 }
