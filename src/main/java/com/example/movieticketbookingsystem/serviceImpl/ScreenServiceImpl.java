@@ -12,6 +12,8 @@ import com.example.movieticketbookingsystem.service.ScreenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,22 +22,32 @@ public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenRepository screenRepository;
     private final TheaterRepository theaterRepository;
+    private final SeatServiceImpl seatService;
 
     @Override
     public ScreenResponse addScreen(String theaterId, ScreenRequest screenRequest) {
-        Optional<Theater> theater = theaterRepository.findById(theaterId);
+        Optional<Theater> theaterOptional = theaterRepository.findById(theaterId);
 
-        if (theater.isEmpty()){
+        if (theaterOptional.isEmpty()){
             throw new TheaterOwnerIdException("Theater id Not Found");
         }else {
-            Theater theater1 = theater.get();
+            Theater theater = theaterOptional.get();
             Screen screen = new Screen();
 
             screen.setScreenType(screenRequest.screenType());
             screen.setCapacity(screenRequest.capacity());
             screen.setNoOfRows(screenRequest.noOfRows());
-            screen.setTheater(theater1);
+            screen.setTheater(theater);
+
+            List<Screen> screens = new ArrayList<>();
+            screens.add(screen);
+            theater.setScreen(screens);
+
+            theaterRepository.save(theater);
             screenRepository.save(screen);
+
+            seatService.generateSeatLayout(screen);
+
 
             return new ScreenResponse(
                     screen.getScreenType(),
