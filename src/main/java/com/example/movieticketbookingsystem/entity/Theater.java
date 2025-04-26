@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -33,6 +35,6 @@ public class Theater {
     @JoinColumn(name = "theater_owner_id", nullable = false)
     private TheaterOwner owner;
 
-    @ManyToOne
-    private Screen screen;
+    @OneToMany(mappedBy = "screen")
+    private List<Screen> screen;
 }
