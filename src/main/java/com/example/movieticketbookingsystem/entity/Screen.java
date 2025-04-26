@@ -13,6 +13,7 @@ import java.util.List;
 public class Screen {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String screenId;
 
     @Enumerated(EnumType.STRING)
