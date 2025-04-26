@@ -1,6 +1,6 @@
 package com.example.movieticketbookingsystem.enums;
 
-public enum screenType {
+public enum ScreenType {
     TWO_D,
     THREE_D,
     IMAX

@@ -32,4 +32,7 @@ public class Theater {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theater_owner_id", nullable = false)
     private TheaterOwner owner;
+
+    @ManyToOne
+    private Screen screen;
 }
