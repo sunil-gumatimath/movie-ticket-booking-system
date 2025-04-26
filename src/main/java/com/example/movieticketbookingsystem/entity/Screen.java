@@ -25,7 +25,8 @@ public class Screen {
     private Long updatedAt;
     private String createdBy;
 
-    @OneToMany(mappedBy = "theater")
-    private List<Theater> theater;
+    @ManyToOne
+    private Theater theater;
+
 
 }
