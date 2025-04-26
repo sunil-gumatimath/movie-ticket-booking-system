@@ -35,6 +35,6 @@ public class Theater {
     @JoinColumn(name = "theater_owner_id", nullable = false)
     private TheaterOwner owner;
 
-    @OneToMany(mappedBy = "screen")
+    @OneToMany(mappedBy = "theater")
     private List<Screen> screen;
 }
