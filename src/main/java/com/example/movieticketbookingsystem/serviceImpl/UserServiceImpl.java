@@ -9,8 +9,10 @@ import com.example.movieticketbookingsystem.entity.UserDetails;
 import com.example.movieticketbookingsystem.exception.UserExistByEmailException;
 import com.example.movieticketbookingsystem.exception.UserNotRegistered;
 import com.example.movieticketbookingsystem.repository.UserRepository;
+import com.example.movieticketbookingsystem.security.SecurityConfig;
 import com.example.movieticketbookingsystem.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserRegisterResponse addUserDetails(UserRegisterRequest request) {
@@ -44,7 +47,7 @@ public class UserServiceImpl implements UserService {
         target.setUserRole(source.userRole());
         target.setUsername(source.username());
         target.setEmail(source.email());
-        target.setPassword(source.password());
+        target.setPassword(passwordEncoder.encode(source.password()));
         target.setPhoneNumber(source.phoneNumber());
         target.setDateOfBirth(source.dateOfBirth());
         return userRepository.save(target);

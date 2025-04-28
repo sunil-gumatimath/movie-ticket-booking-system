@@ -3,7 +3,7 @@ spring:
     name: movie-ticket-booking-system-api
 
   datasource:
-    url: jdbc:mysql://localhost:3306/movie-ticket-booking-application-db?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/movie-ticket-booking-app-db?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver  # ✅ Add this if not already auto-detected
