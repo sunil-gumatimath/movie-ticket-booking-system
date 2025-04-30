@@ -4,6 +4,9 @@ import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,7 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
-@Entity // VERY IMPORTANT
+@Entity
+@EntityListeners(AuditingEntityListener.class)
 public abstract class UserDetails {
 
     @Id
@@ -29,23 +33,21 @@ public abstract class UserDetails {
     private String phoneNumber;
     private LocalDate dateOfBirth;
 
-    private Long createdAt;
-    private Long updatedAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    private Instant createdAt;
 
-    @Column(name = "is_deleted")
+    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    private Instant updatedAt;
+
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
     private boolean isDeleted = false;
-    @Column(name = "deleted_at")
+
+    @Column(name = "deleted_at", nullable = true)
     private Instant deletedAt;
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt != null ? createdAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt != null ? updatedAt.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
-    }
-
-    public void softDelete(){
+    public void softDelete() {
         this.isDeleted = true;
         this.deletedAt = Instant.now();
     }

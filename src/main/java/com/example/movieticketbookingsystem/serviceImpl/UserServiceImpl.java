@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userRequest.username());
         user.setPhoneNumber(userRequest.phoneNumber());
         user.setDateOfBirth(userRequest.dateOfBirth());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedAt(Instant.now());
 
         userRepository.save(user);
 

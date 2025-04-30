@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class SeatServiceImpl implements SeatService {
             for (int j = 1; j <= seatsPerRow; j++) {
                 Seat newSeat = new Seat();
                 newSeat.setSeatName(rowName + String.valueOf(j));
-                newSeat.setCreatedAt(System.currentTimeMillis());
+                newSeat.setCreatedAt(Instant.ofEpochMilli(System.currentTimeMillis()));
                 newSeat.setScreen(existingScreen);
                 seatList.add(newSeat);
             }
