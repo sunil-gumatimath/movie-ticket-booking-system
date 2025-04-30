@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class TheaterServiceImpl implements TheaterService {
             newTheater.setAddress(theaterRequest.address());
             newTheater.setCity(theaterRequest.city());
             newTheater.setLandmark(theaterRequest.landmark());
-            newTheater.setCreatedAt(System.currentTimeMillis());
+//            newTheater.setCreatedAt(System.currentTimeMillis());
             //  newTheater.setCreatedBy(userDetails.getUserId());
 
             newTheater.setOwner((TheaterOwner) userDetails);
@@ -92,7 +93,7 @@ public class TheaterServiceImpl implements TheaterService {
         existingTheater.setAddress(updatedTheater.address());
         existingTheater.setCity(updatedTheater.city());
         existingTheater.setLandmark(updatedTheater.landmark());
-        existingTheater.setUpdatedAt(System.currentTimeMillis());
+        existingTheater.setUpdatedAt(Instant.ofEpochMilli(System.currentTimeMillis()));
 
         // Save the updated theater back to the repository
         theaterRepository.save(existingTheater);

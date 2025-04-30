@@ -22,7 +22,7 @@ public class TheaterController {
     private final TheaterServiceImpl theaterService;
 
     @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
-    @PostMapping("/create")
+    @PostMapping("/theater/register")
     public ResponseEntity<ResponseStructure<TheaterResponse>> createTheater(@RequestBody TheaterRequest theaterRequest, @Valid @RequestParam String email) {
         TheaterResponse createTheater = theaterService.createTheater(email, theaterRequest);
         return RestResponseBuilder.created("Theater Created", createTheater, HttpStatus.CREATED);
@@ -34,6 +34,7 @@ public class TheaterController {
         return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
     @PutMapping("/theater/update")
     public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, @RequestBody TheaterRequest theaterRequest){
         TheaterResponse updateTheater = theaterService.updateTheater(id,theaterRequest);
