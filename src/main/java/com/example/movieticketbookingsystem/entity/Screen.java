@@ -30,27 +30,29 @@ public class Screen {
     private Integer capacity;
     private Integer noOfRows;
 
-    @Column(name = "created_At", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "updated_At", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(name = "created_By", nullable = false, updatable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     @CreatedBy
     private String createdBy;
 
-    @Column(name = "updated_By", nullable = false)
+    @Column(name = "updated_by", nullable = false)
     @LastModifiedBy
     private String updatedBy;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theater_id", nullable = false)
     private Theater theater;
 
-    @OneToMany(mappedBy = "screen",fetch = FetchType.EAGER)
-    private List<Seat> seat = new ArrayList<>();
+    @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Seat> seats = new ArrayList<>();
 
+    @OneToOne(mappedBy = "screen", cascade = CascadeType.ALL)
+    private Show show;
 }
