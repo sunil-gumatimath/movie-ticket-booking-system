@@ -4,16 +4,17 @@ import com.example.movieticketbookingsystem.dto.request.ShowRequest;
 import com.example.movieticketbookingsystem.dto.response.ShowResponse;
 import com.example.movieticketbookingsystem.entity.Movie;
 import com.example.movieticketbookingsystem.entity.Screen;
-import com.example.movieticketbookingsystem.entity.Show;
+import com.example.movieticketbookingsystem.entity.Shows;
 import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.exception.ResourceNotFoundException;
+import com.example.movieticketbookingsystem.exception.ConflictException;
 import com.example.movieticketbookingsystem.repository.MovieRepository;
 import com.example.movieticketbookingsystem.repository.ScreenRepository;
 import com.example.movieticketbookingsystem.repository.ShowRepository;
-import com.example.movieticketbookingsystem.repository.TheaterRepository;
 import com.example.movieticketbookingsystem.service.ShowService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,51 +26,73 @@ public class ShowServiceImpl implements ShowService {
 
     private final ShowRepository showRepository;
     private final ScreenRepository screenRepository;
-    private final TheaterRepository theaterRepository;
     private final MovieRepository movieRepository;
 
-
     @Override
-    public ShowResponse addShow(ShowRequest showRequest, String screenId) {
-        Screen screen = screenRepository.findById(screenId).orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
+    @Transactional
+    public ShowResponse addShow(ShowRequest showRequest, String theaterId, String screenId) {
+        // 1. Validate Screen
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
 
+        // 2. Get associated Theater
         Theater theater = screen.getTheater();
-        if (theater == null){
-            throw new IllegalStateException("Screen is not associated with a theater");
+        if (theater == null) {
+            throw new ConflictException("Screen is not associated with any theater");
         }
 
-        Movie movie = movieRepository.findById(showRequest.movieId()).orElseThrow(()->new ResourceNotFoundException("Movie not found"));
+        // 3. Validate Theater ID
+        if (!theater.getTheaterId().equals(theaterId)) {
+            throw new ConflictException("Screen does not belong to the specified theater");
+        }
 
-        LocalDateTime startTime = Instant.ofEpochMilli(showRequest.startTimeEpochMillis())
-                .atZone(ZoneId.of("UTC")).toLocalDateTime();
+        // 4. Validate Movie
+        Movie movie = movieRepository.findById(showRequest.movieId())
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
 
-        LocalDateTime endTime = startTime.plus(movie.getRuntime());
+        // 5. Convert start time from epoch to LocalDateTime
+        Instant now = Instant.now();
+        Instant requestedStartTime = Instant.ofEpochMilli(showRequest.startTimeEpochMillis());
 
-        // 6. Check if time slot is available
-        boolean isOccupied = showRepository.existsByScreenAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
-                screen, endTime, startTime
+        // Validate that start time is not in the past
+        if (requestedStartTime.isBefore(now)) {
+            throw new ConflictException("Show start time cannot be in the past");
+        }
+
+        // 6. Calculate end time using movie duration
+        Instant endInstant = requestedStartTime.plus(movie.getRuntime());
+
+        // 7. Check for overlapping shows
+        // This checks if there's any show where:
+        // - The show is for the same screen
+        // - The show's start time is before our end time (startsAt < endInstant)
+        // - The show's end time is after our start time (endsAt > startInstant)
+        boolean isOccupied = showRepository.existsByScreenAndStartsAtLessThanAndEndsAtGreaterThan(
+                screen, endInstant, requestedStartTime
         );
 
-        if (isOccupied){
-            throw new IllegalStateException("Time slot is already occupied");
+        if (isOccupied) {
+            throw new ConflictException("The selected time slot is already occupied for this screen");
         }
 
-        Show show = new Show();
-        show.setScreen(screen);
-        show.setTheater(theater);
-        show.setMovie(movie);
-        show.setStartsAt(startTime.toInstant(ZoneId.of("UTC").getRules().getOffset(startTime)));
-        show.setEndsAt(endTime.toInstant(ZoneId.of("UTC").getRules().getOffset(endTime)));
+        // 8. Create and save the Show
+        Shows shows = new Shows();
+        shows.setScreen(screen);
+        shows.setTheater(theater);
+        shows.setMovie(movie);
+        shows.setStartsAt(requestedStartTime);
+        shows.setEndsAt(endInstant);
 
-        showRepository.save(show);
+        showRepository.save(shows);
 
+        // 9. Return response
         return new ShowResponse(
-                show.getShowId(),
+                shows.getShowId(),
                 movie.getTitle(),
                 theater.getName(),
                 screen.getScreenId(),
-                show.getStartsAt().toEpochMilli(),
-                show.getEndsAt().toEpochMilli()
+                shows.getStartsAt().toEpochMilli(),
+                shows.getEndsAt().toEpochMilli()
         );
     }
 }

@@ -67,7 +67,7 @@ public class ScreenServiceImpl implements ScreenService {
             throw new ScreenIdNotFoundException("Screen Id Not Found ");
         }else {
             Screen screen = optionalScreen.get();
-            List<Seat> seatList = screen.getSeat();
+            List<Seat> seatList = screen.getSeats();
 
             if (seatList == null){
                 seatList = new ArrayList<>();

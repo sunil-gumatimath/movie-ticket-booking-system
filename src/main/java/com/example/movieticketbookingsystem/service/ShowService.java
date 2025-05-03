@@ -5,5 +5,5 @@ import com.example.movieticketbookingsystem.dto.response.ShowResponse;
 import jakarta.validation.Valid;
 
 public interface ShowService {
-    ShowResponse addShow(@Valid ShowRequest showRequest, String screenId);
+    ShowResponse addShow(@Valid ShowRequest showRequest, String theaterId, String screenId);
 }

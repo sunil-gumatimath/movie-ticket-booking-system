@@ -44,7 +44,7 @@ public class SeatServiceImpl implements SeatService {
         }
 
         seatRepository.saveAll(seatList);
-        existingScreen.setSeat(seatList);
+        existingScreen.setSeats(seatList);
         screenRepository.save(existingScreen);
     }
 }

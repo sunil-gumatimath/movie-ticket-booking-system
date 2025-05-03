@@ -15,7 +15,8 @@ import java.time.Instant;
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Show {
+@Table(name = "shows_table")
+public class Shows {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
