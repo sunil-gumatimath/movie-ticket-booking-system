@@ -40,4 +40,7 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     @Column(name = "genre")
     private Genre genre;
+
+    @OneToMany(mappedBy = "movie")
+    private Feedback feedback;
 }
