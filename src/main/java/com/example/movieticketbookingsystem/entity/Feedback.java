@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -27,16 +28,20 @@ public class Feedback {
     @NotBlank
     private String review;
 
-    @Column(name = "created_By", nullable = false, updatable = false)
-    @CreatedBy
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
     private Instant createdAt;
 
+    @Column(name = "created_by", nullable = false, updatable = false)
+    @CreatedBy
+    private String createdBy;
+
     @ManyToOne
-    @Column(name = "movie_id", nullable = false)
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
     @ManyToOne
-    @Column(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 }

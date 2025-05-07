@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,5 +43,5 @@ public class Movie {
     private Genre genre;
 
     @OneToMany(mappedBy = "movie")
-    private Feedback feedback;
+    private List<Feedback> feedbacks;
 }
