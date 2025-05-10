@@ -6,7 +6,7 @@ spring:
     url: jdbc:mysql://localhost:3306/movie-ticket-booking-app-db?createDatabaseIfNotExist=true
     username: root
     password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver  # ✅ Add this if not already auto-detected
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     open-in-view: false
@@ -16,3 +16,4 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
