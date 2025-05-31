@@ -1,34 +1,50 @@
 # Exception Handling Architecture
 
-This document describes the comprehensive exception handling system implemented in the Movie Ticket Booking System API.
+This document provides detailed technical documentation for the exception handling system in the Movie Ticket Booking System API.
+
+> 📖 **For general project information, setup instructions, and API documentation, see the main**: [`README.md`](../../../../../README.md)
+
+## Table of Contents
+- [Overview](#overview)
+- [Exception Handler Structure](#exception-handler-structure)
+- [Error Response Formats](#error-response-formats)
+- [Exception Classes](#exception-classes)
+- [Usage Examples](#usage-examples)
+- [Handler Architecture](#handler-architecture)
+- [Benefits](#benefits)
+- [Recent Cleanup](#recent-cleanup-2024)
 
 ## Overview
 
 The exception handling system is designed with the following principles:
 - **Separation of Concerns**: Each domain has its own exception handler
-- **Consistent Error Responses**: All errors follow a standard format
-- **Detailed Error Information**: Includes timestamps, paths, and specific error messages
+- **Consistent Error Responses**: All errors follow a standard format using RestResponseBuilder
+- **Specific Exception Classes**: Domain-specific exceptions for better error handling
 - **Proper HTTP Status Codes**: Each exception maps to appropriate HTTP status codes
-- **Logging**: All exceptions are properly logged for debugging
+- **Clean Architecture**: Removed redundant and generic exception classes
+- **RestResponseBuilder Pattern**: All handlers use consistent response building
 
 ## Exception Handler Structure
 
-### 1. UserExceptionHandler (@Order(1))
+### 1. UserExceptionHandler
 Handles user-related exceptions:
 - `UserNotFoundByEmailException` → 404 NOT_FOUND
-- `UserExistByEmailException` → 409 CONFLICT  
+- `UserExistByEmailException` → 409 CONFLICT
 - `UserNotRegistered` → 401 UNAUTHORIZED
 
-### 2. MovieExceptionHandler (@Order(2))
+### 2. MovieExceptionHandler
 Handles movie-related exceptions:
 - `MovieNotFoundByIdException` → 404 NOT_FOUND
 
-### 3. TheaterExceptionHandler (@Order(3))
-Handles theater and screen-related exceptions:
+### 3. TheaterExceptionHandler
+Handles theater-related exceptions:
 - `TheaterOwnerIdException` → 404 NOT_FOUND
+
+### 4. ScreenExceptionHandler
+Handles screen-related exceptions:
 - `ScreenIdNotFoundException` → 404 NOT_FOUND
 
-### 4. SecurityExceptionHandler (@Order(4))
+### 5. SecurityExceptionHandler
 Handles security and authentication exceptions:
 - `BadCredentialsException` → 401 UNAUTHORIZED
 - `AuthenticationException` → 401 UNAUTHORIZED
@@ -36,15 +52,13 @@ Handles security and authentication exceptions:
 - `DisabledException` → 401 UNAUTHORIZED
 - `LockedException` → 401 UNAUTHORIZED
 
-### 5. ValidationExceptionHandler (@Order(5))
+### 6. ValidationExceptionHandler
 Handles validation-related exceptions:
 - `MethodArgumentNotValidException` → 400 BAD_REQUEST
-- `ConstraintViolationException` → 400 BAD_REQUEST
+- Returns detailed field-level validation errors
 
-### 6. GeneralExceptionHandler (@Order(10))
+### 7. GeneralExceptionHandler
 Handles general application exceptions (lowest priority):
-- `ResourceNotFoundException` → 404 NOT_FOUND
-- `ConflictException` → 409 CONFLICT
 - `DataIntegrityViolationException` → 400 BAD_REQUEST
 - `NoHandlerFoundException` → 404 NOT_FOUND
 - `HttpRequestMethodNotSupportedException` → 405 METHOD_NOT_ALLOWED
@@ -60,8 +74,7 @@ Handles general application exceptions (lowest priority):
 {
   "statusCode": 404,
   "error_message": "User not found with the provided email",
-  "timestamp": "2024-01-15T10:30:45",
-  "path": "/api/users/123"
+  "timestamp": "2024-01-15T10:30:45"
 }
 ```
 
@@ -71,13 +84,11 @@ Handles general application exceptions (lowest priority):
   "statusCode": 400,
   "error_message": "Validation failed for one or more fields",
   "timestamp": "2024-01-15T10:30:45",
-  "path": "/api/users",
   "data": [
     {
       "field": "email",
       "rejectedValue": "invalid-email",
-      "errorMessage": "Please provide a valid email address",
-      "objectName": "userRegisterRequest"
+      "errorMessage": "Please provide a valid email address"
     }
   ]
 }
@@ -90,6 +101,14 @@ All custom exception classes follow these patterns:
 - Use proper constructor chaining with `super(message)` and `super(message, cause)`
 - Include `@Getter` annotation for accessing message
 - Provide both single-parameter and cause-parameter constructors
+
+### Current Exception Classes:
+- `UserNotFoundByEmailException`
+- `UserExistByEmailException`
+- `UserNotRegistered`
+- `MovieNotFoundByIdException`
+- `TheaterOwnerIdException`
+- `ScreenIdNotFoundException`
 
 ## Usage Examples
 
@@ -104,27 +123,50 @@ throw new MovieNotFoundByIdException("Movie not found with ID: " + movieId);
 // Theater owner not found
 throw new TheaterOwnerIdException("Theater owner not found with ID: " + ownerId);
 
-// Resource conflict
-throw new ConflictException("Email already exists in the system");
+// Screen not found
+throw new ScreenIdNotFoundException("Screen not found with ID: " + screenId);
 ```
 
-### Handler Priority
-Handlers are ordered using `@Order` annotation:
-- Lower numbers = Higher priority
-- Specific handlers (1-5) handle domain-specific exceptions
-- General handler (10) catches remaining exceptions
+### Handler Architecture
+All exception handlers follow consistent patterns:
+- Use `@RestControllerAdvice` annotation
+- Use `@AllArgsConstructor` for dependency injection
+- Use `RestResponseBuilder` field named `responseBuilder`
+- Use `@ExceptionHandler` methods without explicit exception class parameters
 
 ## Benefits
 
-1. **Maintainability**: Each domain's exceptions are handled separately
-2. **Consistency**: All error responses follow the same format
-3. **Debugging**: Comprehensive logging and error details
-4. **User Experience**: Clear, meaningful error messages
-5. **API Documentation**: Predictable error response structure
-6. **Security**: Sensitive information is not exposed in error messages
+1. **Clean Architecture**: Removed redundant and generic exception classes
+2. **Maintainability**: Each domain's exceptions are handled separately
+3. **Consistency**: All error responses follow the same format using RestResponseBuilder
+4. **Specificity**: Domain-specific exceptions provide better error context
+5. **User Experience**: Clear, meaningful error messages
+6. **API Documentation**: Predictable error response structure
+7. **Security**: Sensitive information is not exposed in error messages
 
-## Migration Notes
+## Recent Cleanup (2024)
 
-- `FieldErrorExceptionHandler` has been deprecated in favor of `ValidationExceptionHandler`
-- All exception handlers now use the updated `ErrorStructure` and `FieldErrorStructure` classes
-- The `RestResponseBuilder` has been enhanced with timestamp and path support
+### Removed Components:
+- ❌ `ConflictException` (generic, replaced with specific exceptions)
+- ❌ `ResourceNotFoundException` (generic, replaced with specific exceptions)
+- ❌ `FieldErrorExceptionHandler` (duplicate validation handler)
+- ❌ `GlobalExceptionHandler` (redundant with specific handlers)
+- ❌ `LoginExceptionhandler` (broken implementation)
+
+### Current Clean Architecture:
+- ✅ Domain-specific exception handlers only
+- ✅ Specific exception classes for better error context
+- ✅ Consistent RestResponseBuilder usage
+- ✅ No redundant or generic exception classes
+- ✅ All compilation errors resolved
+
+## Summary
+
+This exception handling system provides:
+- **7 Domain-Specific Handlers** for different business areas
+- **6 Custom Exception Classes** for specific error scenarios
+- **Consistent Error Responses** using RestResponseBuilder pattern
+- **Clean Architecture** with no redundant or generic exceptions
+- **Comprehensive Coverage** from validation to general application errors
+
+> 🔙 **Return to main project documentation**: [`README.md`](../../../../../README.md)
