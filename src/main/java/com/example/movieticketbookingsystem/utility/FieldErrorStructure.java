@@ -12,5 +12,9 @@ public class FieldErrorStructure<T> {
     @JsonProperty("error_message")
     private String errorMessage;
 
-    T data;
+    private String timestamp;
+
+    private String path;
+
+    private T data;
 }

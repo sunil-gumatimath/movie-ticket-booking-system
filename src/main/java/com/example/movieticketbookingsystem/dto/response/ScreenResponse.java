@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record ScreenResponse(
+        String screenId,
+
         @NotNull(message = "Screen type must not be null")
         ScreenType screenType,
 

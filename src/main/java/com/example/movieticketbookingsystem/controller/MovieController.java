@@ -17,9 +17,9 @@ public class MovieController {
 
     private final MovieServiceImpl movieService;
 
-    @GetMapping("/movies{movieId}")
+    @GetMapping("/movies/{movieId}")
     public ResponseEntity<ResponseStructure<MovieResponse>> getMovie(@PathVariable String movieId){
         MovieResponse movieResponse = movieService.getMovie(movieId);
-        return RestResponseBuilder.success(HttpStatus.OK,"Movie has been fetch successfully",movieResponse);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Movie has been fetch successfully", movieResponse);
     }
 }

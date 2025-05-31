@@ -27,6 +27,6 @@ public class ShowController {
             @Valid @RequestBody ShowRequest showRequest) {
 
         ShowResponse showResponse = showService.addShow(showRequest, theaterId, screenId);
-        return RestResponseBuilder.created("Show Created", showResponse, HttpStatus.CREATED);
+        return new RestResponseBuilder().success(HttpStatus.CREATED, "Show Created", showResponse);
     }
 }

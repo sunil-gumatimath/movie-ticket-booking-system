@@ -29,10 +29,12 @@ public class MovieServiceImpl implements MovieService {
 
             double avgRatings = 0;
 
-            for (Feedback feedback: feedbacks){
-                avgRatings+=feedback.getRating();
+            if (!feedbacks.isEmpty()) {
+                for (Feedback feedback: feedbacks){
+                    avgRatings+=feedback.getRating();
+                }
+                avgRatings/=feedbacks.size();
             }
-            avgRatings/=feedbacks.size();
 
             return movieMapper.movieResponseMapper(movie,avgRatings);
         }

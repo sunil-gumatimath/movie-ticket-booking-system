@@ -1,16 +1,21 @@
 package com.example.movieticketbookingsystem.utility;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
 @Builder
-public class ErrorStructure<T> {
+public class ErrorStructure {
 
-    private String type;
-    private int status;        //404
-    private String message;         // failed to update the user (error message)
+    private int statusCode;
+
+    @JsonProperty("error_message")
+    private String message;
+
+    private String timestamp;
+
+    private String path;
 }

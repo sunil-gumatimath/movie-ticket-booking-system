@@ -17,3 +17,14 @@ spring:
       hibernate:
         format_sql: true
 
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:pguQuMEr0QorbK6ZrCPITXw5/NRf7zRW2yjh4/WpN4c=}
+  expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
+
+# Logging Configuration
+logging:
+  level:
+    com.example.movieticketbookingsystem: DEBUG
+    org.springframework.security: DEBUG
+

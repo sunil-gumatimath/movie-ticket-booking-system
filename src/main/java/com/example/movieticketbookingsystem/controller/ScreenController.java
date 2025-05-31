@@ -19,14 +19,16 @@ public class ScreenController {
     private final ScreenServiceImpl screenService;
 
     @PostMapping("/screen")
-    public ResponseEntity<ResponseStructure<ScreenResponse>> addScreen(@Valid @RequestParam String theaterId, @RequestBody ScreenRequest screenRequest){
-        ScreenResponse addScreen = screenService.addScreen(theaterId,screenRequest);
-        return RestResponseBuilder.created("Screen Created", addScreen, HttpStatus.CREATED);
+    public ResponseEntity<ResponseStructure<ScreenResponse>> addScreen(
+            @RequestParam String theaterId,
+            @Valid @RequestBody ScreenRequest screenRequest){
+        ScreenResponse addScreen = screenService.addScreen(theaterId, screenRequest);
+        return new RestResponseBuilder().success(HttpStatus.CREATED, "Screen Created", addScreen);
     }
 
-    @GetMapping("/screen/id")
-    public ResponseEntity<ResponseStructure<ScreenResponseList>> findScreen(@Valid @RequestParam String screenId){
+    @GetMapping("/screen/{screenId}")
+    public ResponseEntity<ResponseStructure<ScreenResponseList>> findScreen(@PathVariable String screenId){
         ScreenResponseList findScreen = screenService.findScreen(screenId);
-        return RestResponseBuilder.ok("Screen Found",findScreen,HttpStatus.OK);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Screen Found", findScreen);
     }
 }

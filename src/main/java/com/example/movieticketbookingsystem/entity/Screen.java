@@ -53,6 +53,6 @@ public class Screen {
     @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Seat> seats = new ArrayList<>();
 
-    @OneToOne(mappedBy = "screen", cascade = CascadeType.ALL)
-    private Shows shows;
+    @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)
+    private List<Shows> shows = new ArrayList<>();
 }

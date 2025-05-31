@@ -22,6 +22,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseStructure<String>> login(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.userLogin(loginRequest);
-        return RestResponseBuilder.success(HttpStatus.OK, "Login successful", token);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Login successful", token);
     }
 }

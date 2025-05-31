@@ -10,11 +10,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -28,6 +30,13 @@ public class FeedbackController {
             @PathVariable String movieId,
             @Valid @RequestBody FeedbackRequest feedbackRequest) {
         FeedbackResponse feedbackResponse = feedbackService.createFeedback(movieId, feedbackRequest);
-        return RestResponseBuilder.created("Feedback submitted successfully", feedbackResponse, HttpStatus.CREATED);
+        return new RestResponseBuilder().success(HttpStatus.CREATED, "Feedback submitted successfully", feedbackResponse);
+    }
+
+    @GetMapping("/movies/{movieId}/feedback")
+    public ResponseEntity<ResponseStructure<List<FeedbackResponse>>> getFeedbacksByMovie(
+            @PathVariable String movieId) {
+        List<FeedbackResponse> feedbacks = feedbackService.getFeedbacksByMovie(movieId);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Feedbacks retrieved successfully", feedbacks);
     }
 }

@@ -23,21 +23,25 @@ public class TheaterController {
 
     @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
     @PostMapping("/theater/register")
-    public ResponseEntity<ResponseStructure<TheaterResponse>> createTheater(@RequestBody TheaterRequest theaterRequest, @Valid @RequestParam String email) {
+    public ResponseEntity<ResponseStructure<TheaterResponse>> createTheater(
+            @Valid @RequestBody TheaterRequest theaterRequest,
+            @RequestParam String email) {
         TheaterResponse createTheater = theaterService.createTheater(email, theaterRequest);
-        return RestResponseBuilder.created("Theater Created", createTheater, HttpStatus.CREATED);
+        return new RestResponseBuilder().success(HttpStatus.CREATED, "Theater Created", createTheater);
     }
 
-    @GetMapping("/theater/id")
-    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@Valid @RequestParam String id){
+    @GetMapping("/theater/{id}")
+    public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@PathVariable String id){
         TheaterResponse findTheater = theaterService.findTheater(id);
-        return RestResponseBuilder.ok("Theater Found",findTheater,HttpStatus.OK);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Theater Found", findTheater);
     }
 
     @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
-    @PutMapping("/theater/update")
-    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(@Valid @RequestParam String id, @RequestBody TheaterRequest theaterRequest){
-        TheaterResponse updateTheater = theaterService.updateTheater(id,theaterRequest);
-        return RestResponseBuilder.ok("Theater Updated",updateTheater,HttpStatus.OK);
+    @PutMapping("/theater/{id}")
+    public ResponseEntity<ResponseStructure<TheaterResponse>> updateTheater(
+            @PathVariable String id,
+            @Valid @RequestBody TheaterRequest theaterRequest){
+        TheaterResponse updateTheater = theaterService.updateTheater(id, theaterRequest);
+        return new RestResponseBuilder().success(HttpStatus.OK, "Theater Updated", updateTheater);
     }
 }
