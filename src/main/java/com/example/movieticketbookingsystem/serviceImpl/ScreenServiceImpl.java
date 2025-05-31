@@ -9,6 +9,7 @@ import com.example.movieticketbookingsystem.entity.Seat;
 import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.exception.ScreenIdNotFoundException;
 import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
+import com.example.movieticketbookingsystem.mapper.ScreenMapper;
 import com.example.movieticketbookingsystem.repository.ScreenRepository;
 import com.example.movieticketbookingsystem.repository.TheaterRepository;
 import com.example.movieticketbookingsystem.service.ScreenService;
@@ -26,67 +27,51 @@ public class ScreenServiceImpl implements ScreenService {
     private final ScreenRepository screenRepository;
     private final TheaterRepository theaterRepository;
     private final SeatServiceImpl seatService;
+    private final ScreenMapper screenMapper;
 
     @Override
     public ScreenResponse addScreen(String theaterId, ScreenRequest screenRequest) {
         Optional<Theater> theaterOptional = theaterRepository.findById(theaterId);
 
-        if (theaterOptional.isEmpty()){
-            throw new TheaterOwnerIdException("Theater is not Found with "+theaterId);
-        }else {
-            Theater theater = theaterOptional.get();
-            Screen screen = new Screen();
+        Theater theater = theaterOptional.orElseThrow(() ->
+            new TheaterOwnerIdException("Theater not found with ID: " + theaterId));
 
-            screen.setScreenType(screenRequest.screenType());
-            screen.setCapacity(screenRequest.capacity());
-            screen.setNoOfRows(screenRequest.noOfRows());
-            screen.setTheater(theater);
-
-            List<Screen> screens = new ArrayList<>();
-            screens.add(screen);
-            theater.setScreen(screens);
-
-            theaterRepository.save(theater);
-            screenRepository.save(screen);
-
-            seatService.generateSeatLayout(screen);
-
-            return new ScreenResponse(
-                    screen.getScreenType(),
-                    screen.getCapacity(),
-                    screen.getNoOfRows()
-            );
+        // Validate capacity and rows
+        if (screenRequest.capacity() % screenRequest.noOfRows() != 0) {
+            throw new IllegalArgumentException("Capacity must be evenly divisible by number of rows");
         }
+
+        Screen screen = new Screen();
+        screen.setScreenType(screenRequest.screenType());
+        screen.setCapacity(screenRequest.capacity());
+        screen.setNoOfRows(screenRequest.noOfRows());
+        screen.setTheater(theater);
+
+        // Add screen to theater's screen list
+        if (theater.getScreen() == null) {
+            theater.setScreen(new ArrayList<>());
+        }
+        theater.getScreen().add(screen);
+
+        // Save screen first to get ID
+        Screen savedScreen = screenRepository.save(screen);
+
+        // Generate seat layout
+        seatService.generateSeatLayout(savedScreen);
+
+        return screenMapper.toScreenResponse(savedScreen);
     }
 
     @Override
     public ScreenResponseList findScreen(String screenId) {
-        Optional<Screen> optionalScreen = screenRepository.findById(screenId);
+        Screen screen = screenRepository.findById(screenId)
+            .orElseThrow(() -> new ScreenIdNotFoundException("Screen not found with ID: " + screenId));
 
-        if (optionalScreen.isEmpty()){
-            throw new ScreenIdNotFoundException("Screen Id Not Found ");
-        }else {
-            Screen screen = optionalScreen.get();
-            List<Seat> seatList = screen.getSeats();
-
-            if (seatList == null){
-                seatList = new ArrayList<>();
-            }
-
-            System.out.println("Found screen: " + screen.getScreenType());
-            System.out.println("Seats: " + seatList.size());
-            seatList.forEach(seat -> System.out.println(seat.getSeatName()));
-
-            List<SeatResponse> seatResponses = seatList.stream().map(seat -> new SeatResponse(seat.getSeatId(),seat.getSeatName())).toList();
-
-
-
-            return new ScreenResponseList(
-                    screen.getScreenType(),
-                    screen.getCapacity(),
-                    screen.getNoOfRows(),
-                    seatResponses
-            );
+        List<Seat> seatList = screen.getSeats();
+        if (seatList == null) {
+            seatList = new ArrayList<>();
         }
+
+        return screenMapper.toScreenResponseList(screen, seatList);
     }
 }

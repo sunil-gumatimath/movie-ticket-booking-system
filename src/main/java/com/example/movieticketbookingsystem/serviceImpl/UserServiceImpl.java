@@ -8,6 +8,7 @@ import com.example.movieticketbookingsystem.entity.User;
 import com.example.movieticketbookingsystem.entity.UserDetails;
 import com.example.movieticketbookingsystem.exception.UserExistByEmailException;
 import com.example.movieticketbookingsystem.exception.UserNotRegistered;
+import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.repository.UserRepository;
 import com.example.movieticketbookingsystem.security.SecurityConfig;
 import com.example.movieticketbookingsystem.service.UserService;
@@ -24,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public UserRegisterResponse addUserDetails(UserRegisterRequest request) {
@@ -31,27 +33,19 @@ public class UserServiceImpl implements UserService {
             throw new UserExistByEmailException("User with Email already exists");
         }
 
-        UserDetails savedUser = switch (request.userRole()) {
-            case USER -> saveUser(new User(), request);
-            case THEATER_OWNER -> saveUser(new TheaterOwner(), request);
-        };
+        // Create user entity using mapper
+        UserDetails userDetails = userMapper.toEntity(request);
 
-        return new UserRegisterResponse(
-                savedUser.getUserId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getUserRole()
-        );
+        // Encode password
+        userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+
+        // Save user
+        UserDetails savedUser = userRepository.save(userDetails);
+
+        // Return response using mapper
+        return userMapper.toResponse(savedUser);
     }
-    private UserDetails saveUser(UserDetails target, UserRegisterRequest source) {
-        target.setUserRole(source.userRole());
-        target.setUsername(source.username());
-        target.setEmail(source.email());
-        target.setPassword(passwordEncoder.encode(source.password()));
-        target.setPhoneNumber(source.phoneNumber());
-        target.setDateOfBirth(source.dateOfBirth());
-        return userRepository.save(target);
-    }
+    // This method is no longer needed as we're using the mapper
 
     @Override
     public UserRegisterResponse updateUser(String email, UserRequest userRequest) {
@@ -60,16 +54,11 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userRequest.username());
         user.setPhoneNumber(userRequest.phoneNumber());
         user.setDateOfBirth(userRequest.dateOfBirth());
-        user.setUpdatedAt(Instant.now());
+        // UpdatedAt will be handled by JPA auditing
 
         userRepository.save(user);
 
-        return new UserRegisterResponse(
-                user.getUserId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getUserRole()
-        );
+        return userMapper.toResponse(user);
     }
 
     @Override

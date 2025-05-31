@@ -2,7 +2,7 @@ package com.example.movieticketbookingsystem.serviceImpl;
 
 import com.example.movieticketbookingsystem.dto.request.LoginRequest;
 import com.example.movieticketbookingsystem.entity.UserDetails;
-import com.example.movieticketbookingsystem.exception.ResourceNotFoundException;
+import com.example.movieticketbookingsystem.exception.UserNotFoundByEmailException;
 import com.example.movieticketbookingsystem.repository.UserRepository;
 import com.example.movieticketbookingsystem.security.jwt.JwtService;
 import com.example.movieticketbookingsystem.security.jwt.TokenPayload;
@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
             if (authentication.isAuthenticated()) {
                 // Fetch user details
                 UserDetails user = userRepository.findByEmail(loginRequest.email())
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                        .orElseThrow(() -> new UserNotFoundByEmailException("User not found"));
 
                 // Create claims for the token
                 Map<String, Object> claims = new HashMap<>();

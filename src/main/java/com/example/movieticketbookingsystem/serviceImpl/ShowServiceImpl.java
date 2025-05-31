@@ -6,8 +6,10 @@ import com.example.movieticketbookingsystem.entity.Movie;
 import com.example.movieticketbookingsystem.entity.Screen;
 import com.example.movieticketbookingsystem.entity.Shows;
 import com.example.movieticketbookingsystem.entity.Theater;
-import com.example.movieticketbookingsystem.exception.ResourceNotFoundException;
-import com.example.movieticketbookingsystem.exception.ConflictException;
+import com.example.movieticketbookingsystem.exception.ScreenIdNotFoundException;
+import com.example.movieticketbookingsystem.exception.MovieNotFoundByIdException;
+import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
+import com.example.movieticketbookingsystem.mapper.ShowMapper;
 import com.example.movieticketbookingsystem.repository.MovieRepository;
 import com.example.movieticketbookingsystem.repository.ScreenRepository;
 import com.example.movieticketbookingsystem.repository.ShowRepository;
@@ -27,28 +29,29 @@ public class ShowServiceImpl implements ShowService {
     private final ShowRepository showRepository;
     private final ScreenRepository screenRepository;
     private final MovieRepository movieRepository;
+    private final ShowMapper showMapper;
 
     @Override
     @Transactional
     public ShowResponse addShow(ShowRequest showRequest, String theaterId, String screenId) {
         // 1. Validate Screen
         Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(() -> new ResourceNotFoundException("Screen not found"));
+                .orElseThrow(() -> new ScreenIdNotFoundException("Screen not found"));
 
         // 2. Get associated Theater
         Theater theater = screen.getTheater();
         if (theater == null) {
-            throw new ConflictException("Screen is not associated with any theater");
+            throw new TheaterOwnerIdException("Screen is not associated with any theater");
         }
 
         // 3. Validate Theater ID
         if (!theater.getTheaterId().equals(theaterId)) {
-            throw new ConflictException("Screen does not belong to the specified theater");
+            throw new TheaterOwnerIdException("Screen does not belong to the specified theater");
         }
 
         // 4. Validate Movie
         Movie movie = movieRepository.findById(showRequest.movieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
+                .orElseThrow(() -> new MovieNotFoundByIdException("Movie not found"));
 
         // 5. Convert start time from epoch to LocalDateTime
         Instant now = Instant.now();
@@ -56,7 +59,7 @@ public class ShowServiceImpl implements ShowService {
 
         // Validate that start time is not in the past
         if (requestedStartTime.isBefore(now)) {
-            throw new ConflictException("Show start time cannot be in the past");
+            throw new TheaterOwnerIdException("Show start time cannot be in the past");
         }
 
         // 6. Calculate end time using movie duration
@@ -72,7 +75,7 @@ public class ShowServiceImpl implements ShowService {
         );
 
         if (isOccupied) {
-            throw new ConflictException("The selected time slot is already occupied for this screen");
+            throw new TheaterOwnerIdException("The selected time slot is already occupied for this screen");
         }
 
         // 8. Create and save the Show
@@ -83,16 +86,9 @@ public class ShowServiceImpl implements ShowService {
         shows.setStartsAt(requestedStartTime);
         shows.setEndsAt(endInstant);
 
-        showRepository.save(shows);
+        Shows savedShow = showRepository.save(shows);
 
-        // 9. Return response
-        return new ShowResponse(
-                shows.getShowId(),
-                movie.getTitle(),
-                theater.getName(),
-                screen.getScreenId(),
-                shows.getStartsAt().toEpochMilli(),
-                shows.getEndsAt().toEpochMilli()
-        );
+        // 9. Return response using mapper
+        return showMapper.toShowResponse(savedShow);
     }
 }

@@ -34,19 +34,19 @@ public class Theater {
     @Column(nullable = false)
     private String landmark;
 
-    @Column(name = "created_At", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "updated_At", nullable = false, updatable = false)
+    @Column(name = "updated_at", nullable = false, updatable = false)
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(name = "created_By", nullable = false, updatable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     @CreatedBy
     private String createdBy;
 
-    @Column(name = "updated_By", nullable = false)
+    @Column(name = "updated_by", nullable = false)
     @LastModifiedBy
     private String updatedBy;
 

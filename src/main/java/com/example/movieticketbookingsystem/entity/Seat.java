@@ -19,7 +19,7 @@ public class Seat {
     private String seatId;
     private String seatName;
 
-    @Column(name = "created_At", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
 

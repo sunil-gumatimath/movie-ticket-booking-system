@@ -3,6 +3,8 @@ package com.example.movieticketbookingsystem.dto.response;
 import jakarta.validation.constraints.NotBlank;
 
 public record TheaterResponse(
+        String theaterId,
+
         @NotBlank(message = "Name must not be blank")
         String name,
 

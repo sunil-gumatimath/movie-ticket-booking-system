@@ -5,7 +5,9 @@ import com.example.movieticketbookingsystem.dto.response.FeedbackResponse;
 import com.example.movieticketbookingsystem.entity.Feedback;
 import com.example.movieticketbookingsystem.entity.Movie;
 import com.example.movieticketbookingsystem.entity.User;
-import com.example.movieticketbookingsystem.exception.ResourceNotFoundException;
+import com.example.movieticketbookingsystem.exception.UserNotFoundByEmailException;
+import com.example.movieticketbookingsystem.exception.MovieNotFoundByIdException;
+import com.example.movieticketbookingsystem.mapper.FeedbackMapper;
 import com.example.movieticketbookingsystem.repository.FeedbackRepository;
 import com.example.movieticketbookingsystem.repository.MovieRepository;
 import com.example.movieticketbookingsystem.repository.UserRepository;
@@ -16,6 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
@@ -23,6 +28,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    private final FeedbackMapper feedbackMapper;
 
     @Override
     @Transactional
@@ -33,27 +39,35 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         // Find the user
         User user = (User) userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundByEmailException("User not found"));
 
         // Find the movie
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with ID: " + movieId));
+                .orElseThrow(() -> new MovieNotFoundByIdException("Movie not found with ID: " + movieId));
 
-        // Create and save the feedback
-        Feedback feedback = new Feedback();
-        feedback.setRating(feedbackRequest.rating());
-        feedback.setReview(feedbackRequest.review());
-        feedback.setMovie(movie);
-        feedback.setUser(user);
+        // Create feedback entity using mapper
+        Feedback feedback = feedbackMapper.toEntity(feedbackRequest, movie, user);
 
+        // Save the feedback
         Feedback savedFeedback = feedbackRepository.save(feedback);
 
-        // Return the response
-        return new FeedbackResponse(
-                savedFeedback.getFeedbackId(),
-                savedFeedback.getRating(),
-                savedFeedback.getReview(),
-                savedFeedback.getCreatedAt()
-        );
+        // Return the response using mapper
+        return feedbackMapper.toResponse(savedFeedback);
+    }
+
+    @Override
+    public List<FeedbackResponse> getFeedbacksByMovie(String movieId) {
+        // Validate that the movie exists
+        if (!movieRepository.existsById(movieId)) {
+            throw new MovieNotFoundByIdException("Movie not found with ID: " + movieId);
+        }
+
+        // Get all feedbacks for the movie
+        List<Feedback> feedbacks = feedbackRepository.findByMovieMovieId(movieId);
+
+        // Map to response DTOs
+        return feedbacks.stream()
+                .map(feedbackMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

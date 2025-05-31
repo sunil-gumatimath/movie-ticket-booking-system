@@ -1,5 +1,6 @@
 package com.example.movieticketbookingsystem.security;
 
+import com.example.movieticketbookingsystem.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, TestFilter testFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, TestFilter testFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         // disabling csrf protection
         http.csrf(csrf -> csrf.disable());
 
@@ -28,6 +29,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/register","/login")
                 .permitAll().anyRequest().authenticated());
 
+        // Add JWT filter before the UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Add test filter after the UsernamePasswordAuthenticationFilter
         http.addFilterAfter(testFilter, UsernamePasswordAuthenticationFilter.class);
 
         // type of authentication to be done (form login)
