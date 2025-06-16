@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class ShowController {
 
     private final ShowServiceImpl showService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/{theaterId}/screens/{screenId}/shows")
     @PreAuthorize("hasRole('THEATER_OWNER')")
@@ -27,6 +28,6 @@ public class ShowController {
             @Valid @RequestBody ShowRequest showRequest) {
 
         ShowResponse showResponse = showService.addShow(showRequest, theaterId, screenId);
-        return new RestResponseBuilder().success(HttpStatus.CREATED, "Show Created", showResponse);
+        return restResponseBuilder.success(HttpStatus.CREATED, "Show Created", showResponse);
     }
 }

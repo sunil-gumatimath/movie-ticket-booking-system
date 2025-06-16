@@ -23,6 +23,7 @@ import java.util.List;
 public class FeedbackController {
 
     private final FeedbackServiceImpl feedbackService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/movies/{movieId}/feedback")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -30,13 +31,13 @@ public class FeedbackController {
             @PathVariable String movieId,
             @Valid @RequestBody FeedbackRequest feedbackRequest) {
         FeedbackResponse feedbackResponse = feedbackService.createFeedback(movieId, feedbackRequest);
-        return new RestResponseBuilder().success(HttpStatus.CREATED, "Feedback submitted successfully", feedbackResponse);
+        return restResponseBuilder.success(HttpStatus.CREATED, "Feedback submitted successfully", feedbackResponse);
     }
 
     @GetMapping("/movies/{movieId}/feedback")
     public ResponseEntity<ResponseStructure<List<FeedbackResponse>>> getFeedbacksByMovie(
             @PathVariable String movieId) {
         List<FeedbackResponse> feedbacks = feedbackService.getFeedbacksByMovie(movieId);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Feedbacks retrieved successfully", feedbacks);
+        return restResponseBuilder.success(HttpStatus.OK, "Feedbacks retrieved successfully", feedbacks);
     }
 }

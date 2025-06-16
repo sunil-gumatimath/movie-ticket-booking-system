@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseStructure<String>> login(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.userLogin(loginRequest);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Login successful", token);
+        return restResponseBuilder.success(HttpStatus.OK, "Login successful", token);
     }
 }

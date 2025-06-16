@@ -17,18 +17,19 @@ import org.springframework.web.bind.annotation.*;
 public class ScreenController {
 
     private final ScreenServiceImpl screenService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/screen")
     public ResponseEntity<ResponseStructure<ScreenResponse>> addScreen(
             @RequestParam String theaterId,
             @Valid @RequestBody ScreenRequest screenRequest){
         ScreenResponse addScreen = screenService.addScreen(theaterId, screenRequest);
-        return new RestResponseBuilder().success(HttpStatus.CREATED, "Screen Created", addScreen);
+        return restResponseBuilder.success(HttpStatus.CREATED, "Screen Created", addScreen);
     }
 
     @GetMapping("/screen/{screenId}")
     public ResponseEntity<ResponseStructure<ScreenResponseList>> findScreen(@PathVariable String screenId){
         ScreenResponseList findScreen = screenService.findScreen(screenId);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Screen Found", findScreen);
+        return restResponseBuilder.success(HttpStatus.OK, "Screen Found", findScreen);
     }
 }

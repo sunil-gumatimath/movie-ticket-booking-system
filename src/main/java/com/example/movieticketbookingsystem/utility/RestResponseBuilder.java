@@ -19,6 +19,17 @@ public class RestResponseBuilder {
         return ResponseEntity.status(statusCode).body(ErrorStructure.builder()
                 .statusCode(statusCode.value())
                 .message(message)
+                .timestamp(java.time.LocalDateTime.now().toString())
+                .build());
+    }
+
+    // Overloaded method for error with URI (used by GeneralExceptionHandler)
+    public ResponseEntity<ErrorStructure> error(HttpStatus statusCode, String message, String requestUri){
+        return ResponseEntity.status(statusCode).body(ErrorStructure.builder()
+                .statusCode(statusCode.value())
+                .message(message)
+                .timestamp(java.time.LocalDateTime.now().toString())
+                .path(requestUri)
                 .build());
     }
 }

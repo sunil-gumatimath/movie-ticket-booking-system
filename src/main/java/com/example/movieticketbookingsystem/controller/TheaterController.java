@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class TheaterController {
 
     private final TheaterServiceImpl theaterService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
     @PostMapping("/theater/register")
@@ -27,13 +28,13 @@ public class TheaterController {
             @Valid @RequestBody TheaterRequest theaterRequest,
             @RequestParam String email) {
         TheaterResponse createTheater = theaterService.createTheater(email, theaterRequest);
-        return new RestResponseBuilder().success(HttpStatus.CREATED, "Theater Created", createTheater);
+        return restResponseBuilder.success(HttpStatus.CREATED, "Theater Created", createTheater);
     }
 
     @GetMapping("/theater/{id}")
     public ResponseEntity<ResponseStructure<TheaterResponse>> findTheater(@PathVariable String id){
         TheaterResponse findTheater = theaterService.findTheater(id);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Theater Found", findTheater);
+        return restResponseBuilder.success(HttpStatus.OK, "Theater Found", findTheater);
     }
 
     @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
@@ -42,6 +43,6 @@ public class TheaterController {
             @PathVariable String id,
             @Valid @RequestBody TheaterRequest theaterRequest){
         TheaterResponse updateTheater = theaterService.updateTheater(id, theaterRequest);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Theater Updated", updateTheater);
+        return restResponseBuilder.success(HttpStatus.OK, "Theater Updated", updateTheater);
     }
 }
