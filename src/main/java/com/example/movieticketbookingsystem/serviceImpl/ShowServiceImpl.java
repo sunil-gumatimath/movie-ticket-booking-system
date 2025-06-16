@@ -9,6 +9,8 @@ import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.exception.ScreenIdNotFoundException;
 import com.example.movieticketbookingsystem.exception.MovieNotFoundByIdException;
 import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
+import com.example.movieticketbookingsystem.exception.TheaterScreenMismatchException;
+import com.example.movieticketbookingsystem.exception.ConflictException;
 import com.example.movieticketbookingsystem.mapper.ShowMapper;
 import com.example.movieticketbookingsystem.repository.MovieRepository;
 import com.example.movieticketbookingsystem.repository.ScreenRepository;
@@ -41,12 +43,12 @@ public class ShowServiceImpl implements ShowService {
         // 2. Get associated Theater
         Theater theater = screen.getTheater();
         if (theater == null) {
-            throw new TheaterOwnerIdException("Screen is not associated with any theater");
+            throw new TheaterScreenMismatchException("Screen is not associated with any theater");
         }
 
         // 3. Validate Theater ID
         if (!theater.getTheaterId().equals(theaterId)) {
-            throw new TheaterOwnerIdException("Screen does not belong to the specified theater");
+            throw new TheaterScreenMismatchException("Screen does not belong to the specified theater");
         }
 
         // 4. Validate Movie
@@ -59,7 +61,7 @@ public class ShowServiceImpl implements ShowService {
 
         // Validate that start time is not in the past
         if (requestedStartTime.isBefore(now)) {
-            throw new TheaterOwnerIdException("Show start time cannot be in the past");
+            throw new ConflictException("Show start time cannot be in the past");
         }
 
         // 6. Calculate end time using movie duration
@@ -75,7 +77,7 @@ public class ShowServiceImpl implements ShowService {
         );
 
         if (isOccupied) {
-            throw new TheaterOwnerIdException("The selected time slot is already occupied for this screen");
+            throw new ConflictException("The selected time slot is already occupied for this screen");
         }
 
         // 8. Create and save the Show

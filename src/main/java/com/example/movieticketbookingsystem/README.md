@@ -39,6 +39,7 @@ Handles movie-related exceptions:
 ### 3. TheaterExceptionHandler
 Handles theater-related exceptions:
 - `TheaterOwnerIdException` → 404 NOT_FOUND
+- `TheaterScreenMismatchException` → 400 BAD_REQUEST
 
 ### 4. ScreenExceptionHandler
 Handles screen-related exceptions:
@@ -59,6 +60,8 @@ Handles validation-related exceptions:
 
 ### 7. GeneralExceptionHandler
 Handles general application exceptions (lowest priority):
+- `ConflictException` → 409 CONFLICT
+- `ResourceNotFoundException` → 404 NOT_FOUND
 - `DataIntegrityViolationException` → 400 BAD_REQUEST
 - `NoHandlerFoundException` → 404 NOT_FOUND
 - `HttpRequestMethodNotSupportedException` → 405 METHOD_NOT_ALLOWED
@@ -109,6 +112,9 @@ All custom exception classes follow these patterns:
 - `MovieNotFoundByIdException`
 - `TheaterOwnerIdException`
 - `ScreenIdNotFoundException`
+- `TheaterScreenMismatchException`
+- `ConflictException`
+- `ResourceNotFoundException`
 
 ## Usage Examples
 
@@ -146,9 +152,12 @@ All exception handlers follow consistent patterns:
 
 ## Recent Cleanup (2024)
 
+### Added Components:
+- ✅ `ConflictException` (for resource conflicts like time slot overlaps)
+- ✅ `ResourceNotFoundException` (for general resource not found scenarios)
+- ✅ `TheaterScreenMismatchException` (for theater-screen validation errors)
+
 ### Removed Components:
-- ❌ `ConflictException` (generic, replaced with specific exceptions)
-- ❌ `ResourceNotFoundException` (generic, replaced with specific exceptions)
 - ❌ `FieldErrorExceptionHandler` (duplicate validation handler)
 - ❌ `GlobalExceptionHandler` (redundant with specific handlers)
 - ❌ `LoginExceptionhandler` (broken implementation)

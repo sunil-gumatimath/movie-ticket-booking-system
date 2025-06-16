@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, TestFilter testFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         // disabling csrf protection
         http.csrf(csrf -> csrf.disable());
 
@@ -31,9 +31,6 @@ public class SecurityConfig {
 
         // Add JWT filter before the UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // Add test filter after the UsernamePasswordAuthenticationFilter
-        http.addFilterAfter(testFilter, UsernamePasswordAuthenticationFilter.class);
 
         // type of authentication to be done (form login)
 //        http.formLogin(Customizer.withDefaults());

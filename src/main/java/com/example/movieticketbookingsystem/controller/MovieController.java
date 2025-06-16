@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
     private final MovieServiceImpl movieService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @GetMapping("/movies/{movieId}")
     public ResponseEntity<ResponseStructure<MovieResponse>> getMovie(@PathVariable String movieId){
         MovieResponse movieResponse = movieService.getMovie(movieId);
-        return new RestResponseBuilder().success(HttpStatus.OK, "Movie has been fetch successfully", movieResponse);
+        return restResponseBuilder.success(HttpStatus.OK, "Movie has been fetch successfully", movieResponse);
     }
 }

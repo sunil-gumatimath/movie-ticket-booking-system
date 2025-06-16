@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseStructure<UserRegisterResponse>> addUserDetails(@Valid @RequestBody UserRegisterRequest userDetails) {
         UserRegisterResponse saveDetails = userService.addUserDetails(userDetails);
-        return new RestResponseBuilder().success(HttpStatus.CREATED, "UserDetail Created", saveDetails);
+        return restResponseBuilder.success(HttpStatus.CREATED, "UserDetail Created", saveDetails);
     }
 
     @PutMapping("/update")
@@ -31,12 +32,12 @@ public class UserController {
             @RequestParam String email,
             @Valid @RequestBody UserRequest userRequest){
         UserRegisterResponse updateUser = userService.updateUser(email, userRequest);
-        return new RestResponseBuilder().success(HttpStatus.OK, "User profile updated successfully", updateUser);
+        return restResponseBuilder.success(HttpStatus.OK, "User profile updated successfully", updateUser);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseStructure<String>> deleteUser(@RequestParam String email) {
         userService.softDelete(email);
-        return new RestResponseBuilder().success(HttpStatus.OK, "User account deleted successfully (soft delete).", null);
+        return restResponseBuilder.success(HttpStatus.OK, "User account deleted successfully (soft delete).", null);
     }
 }
