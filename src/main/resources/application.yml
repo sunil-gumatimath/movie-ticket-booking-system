@@ -26,5 +26,4 @@ jwt:
 logging:
   level:
     com.example.movieticketbookingsystem: DEBUG
-    org.springframework.security: DEBUG
-
+    org.springframework.security: INFO
