@@ -3,21 +3,17 @@ package com.example.movieticketbookingsystem.serviceImpl;
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.dto.request.UserRequest;
 import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
-import com.example.movieticketbookingsystem.entity.TheaterOwner;
-import com.example.movieticketbookingsystem.entity.User;
 import com.example.movieticketbookingsystem.entity.UserDetails;
 import com.example.movieticketbookingsystem.exception.UserExistByEmailException;
 import com.example.movieticketbookingsystem.exception.UserNotRegistered;
 import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.repository.UserRepository;
-import com.example.movieticketbookingsystem.security.SecurityConfig;
 import com.example.movieticketbookingsystem.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
@@ -45,7 +41,6 @@ public class UserServiceImpl implements UserService {
         // Return response using mapper
         return userMapper.toResponse(savedUser);
     }
-    // This method is no longer needed as we're using the mapper
 
     @Override
     public UserRegisterResponse updateUser(String email, UserRequest userRequest) {

@@ -76,7 +76,7 @@ Handles general application exceptions (lowest priority):
 ```json
 {
   "statusCode": 404,
-  "error_message": "User not found with the provided email",
+  "message": "User not found with the provided email",
   "timestamp": "2024-01-15T10:30:45"
 }
 ```
@@ -85,7 +85,7 @@ Handles general application exceptions (lowest priority):
 ```json
 {
   "statusCode": 400,
-  "error_message": "Validation failed for one or more fields",
+  "message": "Validation failed for one or more fields",
   "timestamp": "2024-01-15T10:30:45",
   "data": [
     {
@@ -131,14 +131,48 @@ throw new TheaterOwnerIdException("Theater owner not found with ID: " + ownerId)
 
 // Screen not found
 throw new ScreenIdNotFoundException("Screen not found with ID: " + screenId);
+
+// Theater-screen mismatch
+throw new TheaterScreenMismatchException("Screen does not belong to the specified theater");
+
+// Resource conflicts
+throw new ConflictException("The selected time slot is already occupied for this screen");
+
+// General resource not found
+throw new ResourceNotFoundException("Requested resource not found");
 ```
 
-### Handler Architecture
+## Handler Architecture
+
 All exception handlers follow consistent patterns:
-- Use `@RestControllerAdvice` annotation
-- Use `@AllArgsConstructor` for dependency injection
-- Use `RestResponseBuilder` field named `responseBuilder`
-- Use `@ExceptionHandler` methods without explicit exception class parameters
+
+### Design Patterns
+- **`@RestControllerAdvice`**: Global exception handling across all controllers
+- **`@AllArgsConstructor`**: Constructor-based dependency injection
+- **`RestResponseBuilder` field**: Named `responseBuilder` for consistency
+- **`@ExceptionHandler`**: Methods without explicit exception class parameters for cleaner code
+
+### Response Building Pattern
+```java
+@RestControllerAdvice
+@AllArgsConstructor
+public class UserExceptionHandler {
+
+    private final RestResponseBuilder responseBuilder;
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorStructure> handleUserNotFound(UserNotFoundByEmailException ex) {
+        return responseBuilder.error(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+}
+```
+
+### Error Response Enhancement
+All error responses now include:
+- **Status Code**: HTTP status code for programmatic handling
+- **Message**: Human-readable error description
+- **Timestamp**: When the error occurred
+- **Path**: Request URI (where applicable)
 
 ## Benefits
 
@@ -173,9 +207,11 @@ All exception handlers follow consistent patterns:
 
 This exception handling system provides:
 - **7 Domain-Specific Handlers** for different business areas
-- **6 Custom Exception Classes** for specific error scenarios
+- **9 Custom Exception Classes** for specific error scenarios
 - **Consistent Error Responses** using RestResponseBuilder pattern
 - **Clean Architecture** with no redundant or generic exceptions
 - **Comprehensive Coverage** from validation to general application errors
+- **Enhanced Error Context** with timestamps and request path information
+- **Semantic Correctness** with appropriate exception usage in business logic
 
 > 🔙 **Return to main project documentation**: [`README.md`](../../../../../README.md)
