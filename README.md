@@ -164,6 +164,14 @@ The application features a clean and optimized exception handling system with do
 - **Security Filter Chain**: Custom JWT authentication filter with proper error handling
 - **Protected Endpoints**: Role-specific access control using `@PreAuthorize` annotations
 
+## 📊 Recent Updates (2025)
+
+### Code Maintenance & Clean Up
+- ✅ **Fixed** minor issues in UserServiceImpl: removed unused imports (`TheaterOwner`, `User`, `SecurityConfig`, `LocalDateTime`) and leftover comments
+- ✅ **Optimized** logging configuration: Changed Spring Security logging from DEBUG to INFO for production-ready security logs
+- ✅ **Updated** project statistics to reflect accurate file count (93 Java files) and descriptive component roles
+- ✅ **Enhanced** documentation with detailed monitoring features and test structure
+
 ## 📊 Recent Updates (2024)
 
 ### Exception System Enhancement
@@ -206,7 +214,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [📚 API Endpoints](#api-endpoints)
 - [🛡️ Exception Handling](#exception-handling)
 - [🔒 Security Features](#security)
-- [📊 Recent Updates](#recent-updates-2024)
+- [📊 Recent Updates](#recent-updates-2025)
 
 ## 🔧 **Troubleshooting**
 
@@ -282,9 +290,9 @@ mvn test jacoco:report
 ```
 
 ### Test Structure
-- **Unit Tests**: Service layer testing
-- **Integration Tests**: Controller and repository testing
-- **Security Tests**: Authentication and authorization testing
+- **Context Loading Test**: Verifies Spring Boot application context loads correctly
+- **Integration Tests**: Controller and repository testing (extensible)
+- **Security Tests**: Authentication and authorization flow testing (expandable)
 
 ## 🚀 **Deployment**
 
@@ -311,9 +319,9 @@ JWT_EXPIRATION=86400000
 ## 🔍 **Monitoring & Health Checks**
 
 The application includes built-in health monitoring:
-- **Startup Health Check**: Validates all critical beans on application start
+- **Startup Health Check**: Validates all critical beans on application start with detailed component status
 - **Bean Validation**: Ensures all services, repositories, and handlers are properly configured
-- **Logging**: Comprehensive logging for debugging and monitoring
+- **Comprehensive Logging**: Tiered logging with DEBUG for app, INFO for security (production-ready)
 
 ## 🔧 **Troubleshooting**
 
@@ -376,7 +384,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [📚 API Endpoints](#api-endpoints)
 - [🛡️ Exception Handling](#exception-handling)
 - [🔒 Security Features](#security)
-- [📊 Recent Updates](#recent-updates-2024)
+- [📊 Recent Updates](#recent-updates-2025)
 - [🔧 Troubleshooting](#troubleshooting)
 
 ## 📞 Support
@@ -394,13 +402,15 @@ For support and questions:
 
 ## 🎯 **Project Statistics**
 
-- **Total Java Files**: 67
-- **Controllers**: 7 (all with proper dependency injection)
-- **Service Implementations**: 8 (with comprehensive business logic)
-- **JPA Entities**: 9 (with proper relationships and auditing)
-- **Exception Handlers**: 7 (domain-specific with consistent patterns)
-- **Custom Exceptions**: 9 (semantically correct and specific)
-- **DTOs**: 14 (request and response objects)
-- **Repositories**: 8 (JPA-based data access)
-- **Mappers**: 7 (object mapping utilities)
-- **Utility Classes**: 4 (response building and error handling)
+- **Total Java Files**: 93 (including main application and test)
+- **Controllers**: 7 (REST endpoints with complete CRUD operations)
+- **Service Implementations**: 8 (comprehensive business logic with transaction management)
+- **JPA Entities**: 9 (with proper inheritance, relationships, and auditing)
+- **Exception Handlers**: 7 (domain-specific with consistent error formatting)
+- **Custom Exceptions**: 9 (granular exception handling for all edge cases)
+- **DTOs**: 14 (7 request, 7 response objects with validation)
+- **Repositories**: 8 (JPA data access with query methods)
+- **Mappers**: 7 (object mapping for clean data transformation)
+- **Utility Classes**: 4 (response building and error handling utilities)
+- **Security Components**: 4 (JWT auth, user details, filters, and config)
+- **Configuration Classes**: 2 (health checks and auditor)
