@@ -66,13 +66,21 @@ src/main/java/com/example/movieticketbookingsystem/
 
 2. **Configure Database**
    - Create a MySQL database named `movie-ticket-booking-app-db`
-   - Update `application.yml` with your database credentials:
-   ```yaml
+   - Configure database credentials via environment variables (or edit `application.yml`):
+   ```bash
+   # Environment variables (recommended)
+   export DB_USERNAME=your_username
+   export DB_PASSWORD=your_password
+   export DB_HOST=localhost
+   export DB_PORT=3306
+   export DB_NAME=movie-ticket-booking-app-db
+
+   # Or directly in application.yml (for development only):
    spring:
      datasource:
-       url: jdbc:mysql://localhost:3306/movie-ticket-booking-app-db?createDatabaseIfNotExist=true
-       username: your_username
-       password: your_password
+       url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:movie-ticket-booking-app-db}?createDatabaseIfNotExist=true
+       username: ${DB_USERNAME:root}
+       password: ${DB_PASSWORD:root}
    ```
 
 3. **Build the project**
@@ -307,7 +315,9 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 ### Environment Variables
 ```bash
 # Database Configuration
-DB_URL=jdbc:mysql://localhost:3306/movie-ticket-booking-app-db
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=movie-ticket-booking-app-db
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 
