@@ -2,11 +2,11 @@
 
 A secure and robust REST API for managing movie ticket bookings, built with Spring Boot. This system allows users to register, browse theaters, view movies, and book tickets through a comprehensive digital interface.
 
-## 📋 Description
+## Description
 
 The Movie Ticket Booking System API is a software application that enables users to browse movies, select showtimes, choose seats, and book tickets online. Theater owners can manage their cinemas, screens, and show schedules efficiently.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework:** Spring Boot 3.4.4
 - **Language:** Java 17
@@ -16,7 +16,7 @@ The Movie Ticket Booking System API is a software application that enables users
 - **Validation:** Bean Validation (Jakarta Validation)
 - **Build Tool:** Maven
 
-## ✨ Features
+## Features
 
 ### User Management
 - User registration and authentication
@@ -46,7 +46,7 @@ The Movie Ticket Booking System API is a software application that enables users
 - Users can provide movie feedback
 - Retrieve feedback by movie
 
-## 🔧 Prerequisites
+## Prerequisites
 
 Before running the application, ensure you have the following installed:
 
@@ -55,7 +55,7 @@ Before running the application, ensure you have the following installed:
 - Maven 3.6+
 - Git
 
-## 🚀 Setup and Installation
+## Setup and Installation
 
 1. **Clone the repository:**
    ```bash
@@ -94,7 +94,7 @@ Before running the application, ensure you have the following installed:
 
 The application will start on `http://localhost:8080`
 
-## 📖 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /login` - User login (returns JWT token)
@@ -123,7 +123,7 @@ The application will start on `http://localhost:8080`
 - `POST /feedback` - Create movie feedback
 - `GET /feedback/movie/{movieId}` - Get all feedback for a movie
 
-## 🔐 Authentication
+## Authentication
 
 This API uses JWT (JSON Web Tokens) for authentication:
 
@@ -134,7 +134,7 @@ This API uses JWT (JSON Web Tokens) for authentication:
    Authorization: Bearer <your-jwt-token>
    ```
 
-## 📊 Database Schema
+## Database Schema
 
 The application uses MySQL with the following main entities:
 
@@ -146,14 +146,14 @@ The application uses MySQL with the following main entities:
 - **Seats:** Individual seats in screens
 - **Feedback:** User reviews for movies
 
-## 🧪 Testing
+## Testing
 
 Run the test suite with Maven:
 ```bash
 mvn test
 ```
 
-## 📝 Sample Usage
+## Sample Usage
 
 ### Create a Show
 See `sample-show-creation-output.md` for detailed example of creating a movie show with overlap prevention.
@@ -177,7 +177,7 @@ curl -X POST http://localhost:8080/login \
 }
 ```
 
-## 🚦 Error Handling
+## Error Handling
 
 The API uses consistent error response structure:
 
@@ -201,7 +201,7 @@ Common HTTP status codes:
 - `409` - Conflict (e.g., overlapping shows)
 - `500` - Internal Server Error
 
-## 🔄 Dependencies
+## Dependencies
 
 Key dependencies include:
 - Spring Web
@@ -212,4 +212,4 @@ Key dependencies include:
 - Lombok
 - Spring Validation
 
-Built with ❤️ using Spring Boot
+Developed using Spring Boot
