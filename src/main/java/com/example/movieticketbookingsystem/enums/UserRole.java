@@ -1,6 +1,6 @@
 package com.example.movieticketbookingsystem.enums;
 
 public enum UserRole {
-    USER,
-    THEATER_OWNER
+    ROLE_USER,
+    ROLE_THEATER_OWNER
 }

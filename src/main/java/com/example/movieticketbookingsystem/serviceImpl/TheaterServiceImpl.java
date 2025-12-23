@@ -37,7 +37,7 @@ public class TheaterServiceImpl implements TheaterService {
         UserDetails userDetails = userRepository.findByEmail(email)
             .orElseThrow(() -> new UserNotFoundByEmailException("User not found with email: " + email));
 
-        if (userDetails.getUserRole() != UserRole.THEATER_OWNER) {
+        if (userDetails.getUserRole() != UserRole.ROLE_THEATER_OWNER) {
             throw new IllegalArgumentException("User is not a theater owner");
         }
 

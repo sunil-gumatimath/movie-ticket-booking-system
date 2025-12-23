@@ -1,0 +1,8 @@
+{
+    "username": "final_user_test",
+    "email": "finaltest@gmail.com",
+    "phoneNumber": "9876543210",
+    "password": "Password123!",
+    "dateOfBirth": "1995-01-01",
+    "userRole": "ROLE_USER"
+}
