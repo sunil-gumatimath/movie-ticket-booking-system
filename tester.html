@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Booking API Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f0f2f5; }
+        h1 { text-align: center; color: #1a73e8; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .section { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .section h2 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #5f6368; }
+        .endpoint { margin-bottom: 15px; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; transition: background 0.3s; }
+        .endpoint:hover { background: #fafafa; }
+        .endpoint h3 { margin: 0 0 10px 0; font-size: 1rem; color: #202124; }
+        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%; }
+        button:hover { background: #1557b0; }
+        button.secondary { background: #5f6368; }
+        pre { background: #202124; color: #f1f3f4; padding: 10px; border-radius: 4px; font-size: 0.85rem; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+        .status-bar { position: sticky; top: 0; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; z-index: 100; display: flex; gap: 20px; align-items: center; }
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-right: 5px; }
+        .post { background: #e6f4ea; color: #137333; }
+        .get { background: #e8f0fe; color: #174ea6; }
+        .put { background: #fef7e0; color: #b06000; }
+        .delete { background: #fce8e6; color: #c5221f; }
+    </style>
+</head>
+<body>
+    <h1>Movie Booking API Dashboard</h1>
+
+    <div class="status-bar">
+        <div><strong>Auth Token:</strong> <span id="tokenStatus" style="color: red;">None (Login Required)</span></div>
+        <div><strong>Last Theater ID:</strong> <span id="theaterIdDisplay">None</span></div>
+        <div><strong>Last Screen ID:</strong> <span id="screenIdDisplay">None</span></div>
+    </div>
+
+    <div class="grid">
+        <!-- AUTH & USER -->
+        <div class="section">
+            <h2>Authentication & User</h2>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Register User/Owner</h3>
+                <input type="text" id="regUsername" placeholder="Username" value="user_test">
+                <input type="text" id="regEmail" placeholder="Email" value="user@gmail.com">
+                <input type="password" id="regPass" placeholder="Password" value="Password123!">
+                <select id="regRole">
+                    <option value="ROLE_USER">USER</option>
+                    <option value="ROLE_THEATER_OWNER">THEATER OWNER</option>
+                </select>
+                <button onclick="register()">Register</button>
+            </div>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Login</h3>
+                <input type="text" id="loginEmail" placeholder="Email" value="user@gmail.com">
+                <input type="password" id="loginPass" placeholder="Password" value="Password123!">
+                <button onclick="login()">Login</button>
+            </div>
+            <div class="endpoint">
+                <h3><span class="tag put">PUT</span> Update User</h3>
+                <input type="text" id="updEmail" placeholder="Target Email">
+                <input type="text" id="updUsername" placeholder="New Username">
+                <button class="secondary" onclick="hitAuth('PUT', '/update?email=' + val('updEmail'), { username: val('updUsername'), phoneNumber: '9876543210', dateOfBirth: '1995-01-01' }, 'commonRes')">Update</button>
+            </div>
+        </div>
+
+        <!-- THEATER -->
+        <div class="section">
+            <h2>Theaters</h2>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Register Theater</h3>
+                <input type="text" id="thOwnerEmail" placeholder="Owner Email">
+                <input type="text" id="thName" placeholder="Theater Name" value="Galaxy Mall">
+                <button onclick="hitAuth('POST', '/theater/register?email=' + val('thOwnerEmail'), { name: val('thName'), address: 'MG Road', city: 'Bangalore', landmark: 'Central' }, 'commonRes', (d) => { theaterId = d.theaterId; el('theaterIdDisplay').innerText = theaterId; el('thIdInput').value = theaterId; el('scrThId').value = theaterId; })">Register</button>
+            </div>
+            <div class="endpoint">
+                <h3><span class="tag get">GET</span> Get Theater</h3>
+                <input type="text" id="thIdInput" placeholder="Theater ID">
+                <button class="secondary" onclick="hitAuth('GET', '/theater/' + val('thIdInput'), null, 'commonRes')">Fetch</button>
+            </div>
+        </div>
+
+        <!-- SCREEN & SHOW -->
+        <div class="section">
+            <h2>Screens & Shows</h2>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Add Screen</h3>
+                <input type="text" id="scrThId" placeholder="Theater ID">
+                <input type="text" id="scrName" placeholder="Screen Name" value="IMAX 1">
+                <button onclick="hitAuth('POST', '/screen?theaterId=' + val('scrThId'), { screenName: val('scrName'), screenType: 'IMAX', numberOfRows: 10, seatsPerRow: 10 }, 'commonRes', (d) => { screenId = d.screenId; el('screenIdDisplay').innerText = screenId; el('showScrId').value = screenId; el('showThId').value = val('scrThId'); })">Add Screen</button>
+            </div>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Add Show</h3>
+                <input type="text" id="showThId" placeholder="Theater ID">
+                <input type="text" id="showScrId" placeholder="Screen ID">
+                <input type="text" id="showMovieId" placeholder="Movie ID" value="MOVIE_123">
+                <button onclick="hitAuth('POST', '/theaters/' + val('showThId') + '/screens/' + val('showScrId') + '/shows', { movieId: val('showMovieId'), startTime: '2025-12-25T18:00:00', endTime: '2025-12-25T21:00:00' }, 'commonRes')">Add Show</button>
+            </div>
+        </div>
+
+        <!-- MOVIES & FEEDBACK -->
+        <div class="section">
+            <h2>Movies & Feedback</h2>
+            <div class="endpoint">
+                <h3><span class="tag get">GET</span> Get Movie</h3>
+                <input type="text" id="movId" placeholder="Movie ID">
+                <button class="secondary" onclick="hit('GET', '/movies/' + val('movId'), null, 'commonRes')">Fetch Movie</button>
+            </div>
+            <div class="endpoint">
+                <h3><span class="tag post">POST</span> Submit Feedback</h3>
+                <input type="text" id="fbMovId" placeholder="Movie ID">
+                <input type="number" id="fbRating" placeholder="Rating (1-5)" min="1" max="5">
+                <textarea id="fbComment" placeholder="Comment"></textarea>
+                <button onclick="hitAuth('POST', '/movies/' + val('fbMovId') + '/feedback', { rating: val('fbRating'), comments: val('fbComment') }, 'commonRes')">Submit</button>
+            </div>
+        </div>
+
+        <!-- RESPONSE -->
+        <div class="section" style="grid-column: 1 / -1;">
+            <h2>Live Response Output</h2>
+            <pre id="commonRes">Perform an action to see the response here...</pre>
+        </div>
+    </div>
+
+    <script>
+        let authToken = '';
+        let theaterId = '';
+        let screenId = '';
+
+        const el = (id) => document.getElementById(id);
+        const val = (id) => el(id).value;
+
+        async function register() {
+            hit('POST', '/register', {
+                username: val('regUsername'),
+                email: val('regEmail'),
+                phoneNumber: '9876543210',
+                password: val('regPass'),
+                dateOfBirth: '1995-01-01',
+                userRole: val('regRole')
+            }, 'commonRes');
+        }
+
+        async function login() {
+            const email = val('loginEmail');
+            const password = val('loginPass');
+            const resElement = el('commonRes');
+            resElement.innerText = 'Logging in...';
+            try {
+                const response = await fetch('http://localhost:8080/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    authToken = result.data;
+                    el('tokenStatus').innerText = 'Active (Token Stored)';
+                    el('tokenStatus').style.color = 'green';
+                    resElement.innerText = 'Login Successful!\n' + JSON.stringify(result, null, 2);
+                } else {
+                    resElement.innerText = 'Login Failed: ' + (result.message || result.error_message);
+                }
+            } catch (error) {
+                resElement.innerText = 'Error: ' + error.message;
+            }
+        }
+
+        async function hit(method, path, data, resId) {
+            const resElement = el(resId);
+            resElement.innerText = 'Sending...';
+            try {
+                const response = await fetch('http://localhost:8080' + path, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: data ? JSON.stringify(data) : null
+                });
+                const result = await response.json();
+                resElement.innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                resElement.innerText = 'Error: ' + error.message;
+            }
+        }
+
+        async function hitAuth(method, path, data, resId, callback) {
+            if (!authToken) { alert('Please login first!'); return; }
+            const resElement = el(resId);
+            resElement.innerText = 'Sending authenticated request...';
+            try {
+                const response = await fetch('http://localhost:8080' + path, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: data ? JSON.stringify(data) : null
+                });
+                const result = await response.json();
+                resElement.innerText = JSON.stringify(result, null, 2);
+                if (response.ok && callback && result.data) {
+                    callback(result.data);
+                }
+            } catch (error) {
+                resElement.innerText = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

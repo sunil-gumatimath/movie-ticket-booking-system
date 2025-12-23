@@ -2,6 +2,7 @@ package com.example.movieticketbookingsystem.entity;
 
 import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
+@Table(name = "user_details")
 @EntityListeners(AuditingEntityListener.class)
 public abstract class UserDetails {
 
@@ -28,6 +30,7 @@ public abstract class UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role", length = 30)
     private UserRole userRole;
 
     private String phoneNumber;

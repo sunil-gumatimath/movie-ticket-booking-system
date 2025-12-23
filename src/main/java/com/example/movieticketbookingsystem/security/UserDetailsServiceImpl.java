@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final SecurityConfig securityConfig;
 
     @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -23,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getUserRole().name())
+                .authorities(user.getUserRole().name())
                 .build();
     }
 }

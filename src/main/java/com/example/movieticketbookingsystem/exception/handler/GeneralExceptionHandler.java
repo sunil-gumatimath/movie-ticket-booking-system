@@ -61,13 +61,13 @@ public class GeneralExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorStructure> handleRuntimeException(RuntimeException ex){
-        return responseBuilder.error(HttpStatus.INTERNAL_SERVER_ERROR, 
-            "An unexpected error occurred while processing your request");
+        ex.printStackTrace();
+        return responseBuilder.error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorStructure> handleException(Exception ex){
-        return responseBuilder.error(HttpStatus.INTERNAL_SERVER_ERROR, 
-            "An unexpected error occurred. Please try again later");
+        ex.printStackTrace();
+        return responseBuilder.error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 }

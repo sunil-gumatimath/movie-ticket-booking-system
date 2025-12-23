@@ -24,7 +24,7 @@ public class UserMapper {
             return null;
         }
 
-        UserDetails userDetails = dto.userRole() == UserRole.USER ? new User() : new TheaterOwner();
+        UserDetails userDetails = dto.userRole() == UserRole.ROLE_USER ? new User() : new TheaterOwner();
 
         userDetails.setUsername(dto.username());
         userDetails.setEmail(dto.email());
