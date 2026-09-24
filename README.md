@@ -8,7 +8,7 @@ A Spring Boot REST API for managing users, theaters, screens, movies, shows, and
 
 ### User and Authentication Management
 
-- User registration with `ROLE_USER` or `ROLE_THEATER_OWNER`
+- Public user registration always creates `ROLE_USER`; privileged roles are provisioned by an administrator.
 - JWT login and stateless authentication
 - User profile updates
 - Soft deletion of user accounts
@@ -71,18 +71,19 @@ export DB_USERNAME=root
 export DB_PASSWORD=root
 ```
 
-MySQL must be running and accessible using these credentials. The application uses `ddl-auto: update`, so Hibernate updates the schema on startup.
+The application uses `ddl-auto: update` by default for local development. Production must run the reviewed migration in [`docs/production-migration.md`](docs/production-migration.md) and set `JPA_DDL_AUTO=validate`.
 
 ### 3. Configure JWT
 
-The defaults in `application.yml` are suitable for local development. Set your own values for other environments:
+The application requires a strong externally supplied secret in every environment. Set your own values for deployments:
 
 ```bash
-export JWT_SECRET='<base64-encoded-secret>'
+export JWT_SECRET='<base64-encoded-secret-at-least-64-bytes>'
+export CORS_ALLOWED_ORIGINS='https://app.example.com'
 export JWT_EXPIRATION=86400000
 ```
 
-`JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours.
+`JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours. The application fails to start if `JWT_SECRET` is missing or too short for HS512.
 
 ### 4. Build and run
 
@@ -153,12 +154,11 @@ Registration request:
   "email": "john.doe@gmail.com",
   "phoneNumber": "9876543210",
   "password": "Password123!",
-  "dateOfBirth": "1990-05-15",
-  "userRole": "ROLE_USER"
+  "dateOfBirth": "1990-05-15"
 }
 ```
 
-Valid user roles are `ROLE_USER` and `ROLE_THEATER_OWNER`.
+Public registration always creates `ROLE_USER`. `ROLE_THEATER_OWNER` and `ROLE_ADMIN` accounts must be provisioned through a trusted administrative process.
 
 Update profile request:
 
@@ -174,7 +174,7 @@ Update profile request:
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
-| `POST` | `/theater/register?email={email}` | Register a theater for an owner | JWT with `ROLE_THEATER_OWNER` |
+| `POST` | `/theater/register` | Register a theater for the authenticated owner | JWT with `ROLE_THEATER_OWNER` |
 | `GET` | `/theater/{id}` | Get theater details by ID | JWT Token |
 | `PUT` | `/theater/{id}` | Update theater details | JWT with `ROLE_THEATER_OWNER` |
 
@@ -193,7 +193,7 @@ Theater request body for registration and update:
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
-| `POST` | `/screen?theaterId={theaterId}` | Add a screen to a theater | JWT Token |
+| `POST` | `/screen?theaterId={theaterId}` | Add a screen to a theater | JWT with `ROLE_THEATER_OWNER` |
 | `GET` | `/screen/{screenId}` | Get screen details | JWT Token |
 
 Screen request body:
@@ -228,6 +228,10 @@ Show request body:
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | `GET` | `/movies/{movieId}` | Get movie details by ID | JWT Token |
+| `POST` | `/movies` | Create a movie | JWT with `ROLE_ADMIN` |
+| `PUT` | `/movies/{movieId}` | Update movie title | JWT with `ROLE_ADMIN` |
+| `PUT` | `/movies/{movieId}/description` | Update movie description | JWT with `ROLE_ADMIN` |
+| `PUT` | `/movies/{movieId}/cast` | Update movie cast | JWT with `ROLE_ADMIN` |
 
 ### Feedback System
 
@@ -255,10 +259,10 @@ The rating must be between `1` and `5`, and the review cannot be blank.
 | 2 | `POST` | `/register` | Public |
 | 3 | `PUT` | `/update?email={email}` | JWT Token |
 | 4 | `DELETE` | `/delete?email={email}` | JWT Token |
-| 5 | `POST` | `/theater/register?email={email}` | JWT with `ROLE_THEATER_OWNER` |
+| 5 | `POST` | `/theater/register` | JWT with `ROLE_THEATER_OWNER` |
 | 6 | `GET` | `/theater/{id}` | JWT Token |
 | 7 | `PUT` | `/theater/{id}` | JWT with `ROLE_THEATER_OWNER` |
-| 8 | `POST` | `/screen?theaterId={theaterId}` | JWT Token |
+| 8 | `POST` | `/screen?theaterId={theaterId}` | JWT with `ROLE_THEATER_OWNER` |
 | 9 | `GET` | `/screen/{screenId}` | JWT Token |
 | 10 | `POST` | `/theaters/{theaterId}/screens/{screenId}/shows` | JWT with `ROLE_THEATER_OWNER` |
 | 11 | `GET` | `/movies/{movieId}` | JWT Token |
@@ -290,7 +294,8 @@ The following documentation routes are also public:
 
 All other application routes require authentication. Method-level authorization further restricts the following operations:
 
-- `ROLE_THEATER_OWNER`: theater registration, theater updates, and show creation
+- `ROLE_THEATER_OWNER`: theater registration, theater updates, screen creation, and show creation for owned resources
+- `ROLE_ADMIN`: movie catalog management
 - `ROLE_USER`: feedback creation
 
 ## Database Schema

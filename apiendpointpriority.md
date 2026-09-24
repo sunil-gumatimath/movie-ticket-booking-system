@@ -21,7 +21,7 @@
 - Description: Soft delete user account
 
 ## Priority 5
-**POST** `/theater/register?email={email}` - Register theater (Theater Owner)
+**POST** `/theater/register` - Register theater for authenticated owner
 - Authentication: JWT Token with ROLE_THEATER_OWNER
 - Description: Register a new theater (Theater Owner only)
 
@@ -37,8 +37,8 @@
 
 ## Priority 8
 **POST** `/screen?theaterId={id}` - Add screen to theater
-- Authentication: JWT Token
-- Description: Add a screen to a theater
+- Authentication: JWT Token with ROLE_THEATER_OWNER
+- Description: Add a screen to your own theater
 
 ## Priority 9
 **GET** `/screen/{screenId}` - Get screen details

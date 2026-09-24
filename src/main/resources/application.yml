@@ -12,7 +12,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
         format_sql: true
@@ -20,10 +20,14 @@ spring:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:VGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBKV1Qgc2lnbmluZyB1c2luZyBIUzUxMiBhbGdvcml0aG0gd2hpY2ggcmVxdWlyZXMgYXQgbGVhc3QgNTEyIGJpdHM=}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
 
 # Logging Configuration
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
 logging:
   level:
     com.example.movieticketbookingsystem: DEBUG
