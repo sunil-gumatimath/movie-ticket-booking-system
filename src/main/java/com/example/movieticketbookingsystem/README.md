@@ -1,111 +1,105 @@
 # Exception Handling Architecture
 
-This document provides detailed technical documentation for the exception handling system in the Movie Ticket Booking System API.
-
-> 📖 **For general project information, setup instructions, and API documentation, see the main**: [`README.md`](../../../../../README.md)
-
-## Table of Contents
-- [Overview](#overview)
-- [Exception Handler Structure](#exception-handler-structure)
-- [Error Response Formats](#error-response-formats)
-- [Exception Classes](#exception-classes)
-- [Usage Examples](#usage-examples)
-- [Handler Architecture](#handler-architecture)
-- [Benefits](#benefits)
-- [Recent Cleanup](#recent-cleanup-2024)
+This document describes the current exception handling implementation in the Movie Ticket Booking System API. For setup instructions and endpoint documentation, see the [main project README](../../../../../README.md).
 
 ## Overview
 
-The exception handling system is designed with the following principles:
-- **Separation of Concerns**: Each domain has its own exception handler
-- **Consistent Error Responses**: All errors follow a standard format using RestResponseBuilder
-- **Specific Exception Classes**: Domain-specific exceptions for better error handling
-- **Proper HTTP Status Codes**: Each exception maps to appropriate HTTP status codes
-- **Clean Architecture**: Removed redundant and generic exception classes
-- **RestResponseBuilder Pattern**: All handlers use consistent response building
+The application uses seven `@RestControllerAdvice` components:
 
-## Exception Handler Structure
+- Domain handlers for users, movies, theaters, and screens.
+- A security handler.
+- A validation handler.
+- A general fallback handler.
 
-### 1. UserExceptionHandler
-Handles user-related exceptions:
-- `UserNotFoundByEmailException` → 404 NOT_FOUND
-- `UserExistByEmailException` → 409 CONFLICT
-- `UserNotRegistered` → 401 UNAUTHORIZED
+The domain, security, and general handlers use `RestResponseBuilder` to create `ErrorStructure` responses. The validation handler creates `FieldErrorStructure` directly so it can return field-level details.
 
-### 2. MovieExceptionHandler
-Handles movie-related exceptions:
-- `MovieNotFoundByIdException` → 404 NOT_FOUND
+## Handler components
 
-### 3. TheaterExceptionHandler
-Handles theater-related exceptions:
-- `TheaterOwnerIdException` → 404 NOT_FOUND
-- `TheaterScreenMismatchException` → 400 BAD_REQUEST
+### `UserExceptionHandler`
 
-### 4. ScreenExceptionHandler
-Handles screen-related exceptions:
-- `ScreenIdNotFoundException` → 404 NOT_FOUND
+- `UserNotFoundByEmailException` → `404 Not Found`
+- `UserExistByEmailException` → `409 Conflict`
+- `UserNotRegistered` → `401 Unauthorized`
 
-### 5. SecurityExceptionHandler
-Handles security and authentication exceptions:
-- `BadCredentialsException` → 401 UNAUTHORIZED
-- `AuthenticationException` → 401 UNAUTHORIZED
-- `AccessDeniedException` → 403 FORBIDDEN
-- `DisabledException` → 401 UNAUTHORIZED
-- `LockedException` → 401 UNAUTHORIZED
+### `MovieExceptionHandler`
 
-### 6. ValidationExceptionHandler
-Handles validation-related exceptions:
-- `MethodArgumentNotValidException` → 400 BAD_REQUEST
-- Returns detailed field-level validation errors
+- `MovieNotFoundByIdException` → `404 Not Found`
 
-### 7. GeneralExceptionHandler
-Handles general application exceptions (lowest priority):
-- `ConflictException` → 409 CONFLICT
-- `ResourceNotFoundException` → 404 NOT_FOUND
-- `DataIntegrityViolationException` → 400 BAD_REQUEST
-- `NoHandlerFoundException` → 404 NOT_FOUND
-- `HttpRequestMethodNotSupportedException` → 405 METHOD_NOT_ALLOWED
-- `MissingServletRequestParameterException` → 400 BAD_REQUEST
-- `MethodArgumentTypeMismatchException` → 400 BAD_REQUEST
-- `RuntimeException` → 500 INTERNAL_SERVER_ERROR
-- `Exception` → 500 INTERNAL_SERVER_ERROR
+### `TheaterExceptionHandler`
 
-## Error Response Formats
+- `TheaterOwnerIdException` → `404 Not Found`
+- `TheaterScreenMismatchException` → `400 Bad Request`
 
-### Standard Error Response
+### `ScreenExceptionHandler`
+
+- `ScreenIdNotFoundException` → `404 Not Found`
+
+### `SecurityExceptionHandler`
+
+- `BadCredentialsException` → `401 Unauthorized`
+- `AuthenticationException` → `401 Unauthorized`
+- `DisabledException` and `LockedException` → `401 Unauthorized`
+- `AccessDeniedException` → `403 Forbidden`
+
+### `ValidationExceptionHandler`
+
+- `MethodArgumentNotValidException` → `400 Bad Request`
+- `ConstraintViolationException` → `400 Bad Request`
+- Returns field-level or constraint-level validation details.
+
+### `GeneralExceptionHandler`
+
+- `ConflictException` → `409 Conflict`
+- `IllegalArgumentException` → `400 Bad Request`
+- `IllegalStateException` → `409 Conflict`
+- Duplicate/unique `DataIntegrityViolationException` → `409 Conflict`
+- Other `DataIntegrityViolationException` → `400 Bad Request`
+- `NoHandlerFoundException` → `404 Not Found`
+- `HttpRequestMethodNotSupportedException` → `405 Method Not Allowed`
+- `MissingServletRequestParameterException` → `400 Bad Request`
+- `MethodArgumentTypeMismatchException` → `400 Bad Request`
+- Unhandled `RuntimeException` → `500 Internal Server Error`
+- Unhandled `Exception` → `500 Internal Server Error`
+
+## Error response formats
+
+### Standard application error
+
 ```json
 {
   "statusCode": 404,
-  "message": "User not found with the provided email",
-  "timestamp": "2024-01-15T10:30:45"
+  "error_message": "User not found with the provided email",
+  "timestamp": "2026-09-24T12:00:00",
+  "path": null
 }
 ```
 
-### Validation Error Response
+The `error_message` property is intentionally named that way by the JSON serialization configuration. The current response builder populates the status code, message, and timestamp. It does not currently populate the request path, so `path` is normally `null`.
+
+### Validation error
+
 ```json
 {
   "statusCode": 400,
-  "message": "Validation failed for one or more fields",
-  "timestamp": "2024-01-15T10:30:45",
+  "error_message": "Validation failed for one or more fields",
+  "timestamp": "2026-09-24T12:00:00",
+  "path": null,
   "data": [
     {
       "field": "email",
       "rejectedValue": "invalid-email",
-      "errorMessage": "Please provide a valid email address"
+      "errorMessage": "Enter a valid Gmail ID"
     }
   ]
 }
 ```
 
-## Exception Classes
+Constraint violations use the same outer structure, but each item in `data` contains `propertyPath`, `invalidValue`, and `message`.
 
-All custom exception classes follow these patterns:
-- Extend `RuntimeException`
-- Use proper constructor chaining with `super(message)` and `super(message, cause)`
-- Include `@Getter` annotation for accessing message
-- Provide both single-parameter and cause-parameter constructors
+## Custom exception classes
 
-### Current Exception Classes:
+The project currently contains eight custom exception classes:
+
 - `UserNotFoundByEmailException`
 - `UserExistByEmailException`
 - `UserNotRegistered`
@@ -114,45 +108,28 @@ All custom exception classes follow these patterns:
 - `ScreenIdNotFoundException`
 - `TheaterScreenMismatchException`
 - `ConflictException`
-- `ResourceNotFoundException`
 
-## Usage Examples
+These classes represent the current domain and request-state errors. There is no `ResourceNotFoundException` class in the source tree.
 
-### Throwing Exceptions in Service Layer
+## Service-layer usage examples
+
 ```java
-// User not found
 throw new UserNotFoundByEmailException("User not found with email: " + email);
-
-// Movie not found
 throw new MovieNotFoundByIdException("Movie not found with ID: " + movieId);
-
-// Theater owner not found
-throw new TheaterOwnerIdException("Theater owner not found with ID: " + ownerId);
-
-// Screen not found
+throw new TheaterOwnerIdException("Theater not found with ID: " + theaterId);
 throw new ScreenIdNotFoundException("Screen not found with ID: " + screenId);
-
-// Theater-screen mismatch
-throw new TheaterScreenMismatchException("Screen does not belong to the specified theater");
-
-// Resource conflicts
-throw new ConflictException("The selected time slot is already occupied for this screen");
-
-// General resource not found
-throw new ResourceNotFoundException("Requested resource not found");
+throw new TheaterScreenMismatchException(
+        "Screen does not belong to the specified theater");
+throw new ConflictException(
+        "The selected time slot is already occupied for this screen");
 ```
 
-## Handler Architecture
+Use `IllegalArgumentException` for invalid request values and `IllegalStateException` for invalid state transitions when no more specific domain exception applies. The general handler maps these to `400` and `409` respectively.
 
-All exception handlers follow consistent patterns:
+## Response construction
 
-### Design Patterns
-- **`@RestControllerAdvice`**: Global exception handling across all controllers
-- **`@AllArgsConstructor`**: Constructor-based dependency injection
-- **`RestResponseBuilder` field**: Named `responseBuilder` for consistency
-- **`@ExceptionHandler`**: Methods without explicit exception class parameters for cleaner code
+Most handlers use this pattern:
 
-### Response Building Pattern
 ```java
 @RestControllerAdvice
 @AllArgsConstructor
@@ -160,58 +137,26 @@ public class UserExceptionHandler {
 
     private final RestResponseBuilder responseBuilder;
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorStructure> handleUserNotFound(UserNotFoundByEmailException ex) {
-        return responseBuilder.error(HttpStatus.NOT_FOUND, ex.getMessage());
+    @ExceptionHandler(UserNotFoundByEmailException.class)
+    public ResponseEntity<ErrorStructure> handleUserNotFound(
+            UserNotFoundByEmailException exception) {
+        return responseBuilder.error(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 }
 ```
 
-### Error Response Enhancement
-All error responses now include:
-- **Status Code**: HTTP status code for programmatic handling
-- **Message**: Human-readable error description
-- **Timestamp**: When the error occurred
-- **Path**: Request URI (where applicable)
+`ValidationExceptionHandler` is different: it builds a `FieldErrorStructure` containing the validation error list and does not inject `RestResponseBuilder`.
 
-## Benefits
+## Status-code summary
 
-1. **Clean Architecture**: Removed redundant and generic exception classes
-2. **Maintainability**: Each domain's exceptions are handled separately
-3. **Consistency**: All error responses follow the same format using RestResponseBuilder
-4. **Specificity**: Domain-specific exceptions provide better error context
-5. **User Experience**: Clear, meaningful error messages
-6. **API Documentation**: Predictable error response structure
-7. **Security**: Sensitive information is not exposed in error messages
+- `200` — successful reads, updates, login, and deletion.
+- `201` — successful resource creation.
+- `400` — validation, illegal-argument, missing-parameter, or type-mismatch errors.
+- `401` — authentication failures.
+- `403` — insufficient permissions or resource ownership failures.
+- `404` — missing resources or routes.
+- `405` — unsupported HTTP method.
+- `409` — duplicate resources, invalid state, or scheduling conflicts.
+- `500` — unhandled application errors.
 
-## Recent Cleanup (2024)
-
-### Added Components:
-- ✅ `ConflictException` (for resource conflicts like time slot overlaps)
-- ✅ `ResourceNotFoundException` (for general resource not found scenarios)
-- ✅ `TheaterScreenMismatchException` (for theater-screen validation errors)
-
-### Removed Components:
-- ❌ `FieldErrorExceptionHandler` (duplicate validation handler)
-- ❌ `GlobalExceptionHandler` (redundant with specific handlers)
-- ❌ `LoginExceptionhandler` (broken implementation)
-
-### Current Clean Architecture:
-- ✅ Domain-specific exception handlers only
-- ✅ Specific exception classes for better error context
-- ✅ Consistent RestResponseBuilder usage
-- ✅ No redundant or generic exception classes
-- ✅ All compilation errors resolved
-
-## Summary
-
-This exception handling system provides:
-- **7 Domain-Specific Handlers** for different business areas
-- **9 Custom Exception Classes** for specific error scenarios
-- **Consistent Error Responses** using RestResponseBuilder pattern
-- **Clean Architecture** with no redundant or generic exceptions
-- **Comprehensive Coverage** from validation to general application errors
-- **Enhanced Error Context** with timestamps and request path information
-- **Semantic Correctness** with appropriate exception usage in business logic
-
-> 🔙 **Return to main project documentation**: [`README.md`](../../../../../README.md)
+> **Return to [main project documentation](../../../../../README.md).**
