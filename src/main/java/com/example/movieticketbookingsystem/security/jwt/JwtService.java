@@ -10,6 +10,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,19 @@ import java.util.Date;
 @Slf4j
 public class JwtService {
 
-    @Value("${jwt.secret:pguQuMEr0QorbK6ZrCPITXw5/NRf7zRW2yjh4/WpN4c=}")
+    @Value("${jwt.secret}")
     private String secret;
+
+    @PostConstruct
+    void validateConfiguration() {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("JWT secret must be configured");
+        }
+        byte[] decoded = Decoders.BASE64.decode(secret);
+        if (decoded.length < 64) {
+            throw new IllegalStateException("JWT secret must be at least 512 bits for HS512");
+        }
+    }
 
     public String createJwtToken(TokenPayload tokenPayload) {
         return Jwts.builder()

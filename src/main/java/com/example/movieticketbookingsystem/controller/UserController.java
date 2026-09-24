@@ -3,7 +3,7 @@ package com.example.movieticketbookingsystem.controller;
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.dto.request.UserRequest;
 import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
-import com.example.movieticketbookingsystem.serviceImpl.UserServiceImpl;
+import com.example.movieticketbookingsystem.service.UserService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/register")

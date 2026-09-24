@@ -1,6 +1,5 @@
 package com.example.movieticketbookingsystem.dto.request;
 
-import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -30,8 +29,5 @@ public record UserRegisterRequest(
         String password,
 
         @Past(message = "Date of birth must be in the past")
-        LocalDate dateOfBirth,
-
-        @NotNull(message = "User role is required")
-        UserRole userRole
+        LocalDate dateOfBirth
 ) {}

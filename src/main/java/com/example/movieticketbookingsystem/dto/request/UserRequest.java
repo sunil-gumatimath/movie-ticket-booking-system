@@ -1,5 +1,6 @@
 package com.example.movieticketbookingsystem.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -7,11 +8,12 @@ import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public record UserRequest(
-        @NotNull(message = "username cannot be null")
+        @NotBlank(message = "username cannot be blank")
+        @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain alphabets, numbers, and underscore")
         String username,
 
-        @NotNull(message = "phoneNumber cannot be null")
-        @Pattern(regexp = "\\d{10}", message = "phoneNumber must be a valid 10-digit number")
+        @NotBlank(message = "phoneNumber cannot be blank")
+        @Pattern(regexp = "^[7-9]\\d{9}$", message = "phoneNumber must be a valid 10-digit number")
         String phoneNumber,
 
         @NotNull(message = "dateOfBirth cannot be null")

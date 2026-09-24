@@ -19,6 +19,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserDetails user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
+        if (user.isDeleted()) {
+            throw new UsernameNotFoundException("User account is deleted");
+        }
+
+        if (user.getUserRole() == null) {
+            throw new UsernameNotFoundException("User account has no role");
+        }
+
         return User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())

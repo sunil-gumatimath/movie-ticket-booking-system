@@ -7,7 +7,8 @@ import com.example.movieticketbookingsystem.repository.UserRepository;
 import com.example.movieticketbookingsystem.security.jwt.JwtService;
 import com.example.movieticketbookingsystem.security.jwt.TokenPayload;
 import com.example.movieticketbookingsystem.service.AuthService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,25 +16,32 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    @Value("${jwt.expiration:86400000}")
+    private long expirationMillis;
+
     @Override
     public String userLogin(LoginRequest loginRequest) {
+        if (expirationMillis <= 0) {
+            throw new IllegalStateException("JWT expiration must be positive");
+        }
+        String normalizedEmail = loginRequest.email().trim().toLowerCase(Locale.ROOT);
         try {
             // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.email(),
+                            normalizedEmail,
                             loginRequest.password()
                     )
             );
@@ -41,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
             // If authentication is successful, generate JWT token
             if (authentication.isAuthenticated()) {
                 // Fetch user details
-                UserDetails user = userRepository.findByEmail(loginRequest.email())
+                UserDetails user = userRepository.findByEmail(normalizedEmail)
                         .orElseThrow(() -> new UserNotFoundByEmailException("User not found"));
 
                 // Create claims for the token
@@ -55,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                         .subject(user.getEmail())
                         .claims(claims)
                         .issuedAt(now)
-                        .expiration(now.plus(24, ChronoUnit.HOURS))
+                        .expiration(now.plusMillis(expirationMillis))
                         .build();
 
                 // Generate and return token

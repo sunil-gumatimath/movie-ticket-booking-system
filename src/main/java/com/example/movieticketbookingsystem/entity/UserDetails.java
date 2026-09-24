@@ -23,12 +23,17 @@ public abstract class UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
 
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false, unique = true, length = 320)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", length = 30)
+    @Column(name = "user_role", length = 30, nullable = false)
     private UserRole userRole;
 
     private String phoneNumber;
