@@ -1,0 +1,252 @@
+{
+  "apiEndpoints": [
+    {
+      "priority": 1,
+      "step": "User Registration",
+      "method": "POST",
+      "path": "/register",
+      "description": "Register a new user account",
+      "authentication": "None",
+      "sampleRequest": {
+        "username": "john_doe123",
+        "email": "john.doe@gmail.com",
+        "phoneNumber": "9876543210",
+        "password": "Password123!",
+        "dateOfBirth": "1990-05-15",
+        "userRole": "ROLE_USER"
+      },
+      "queryParams": [],
+      "pathParams": []
+    },
+    {
+      "priority": 2,
+      "step": "User Login",
+      "method": "POST",
+      "path": "/login",
+      "description": "Authenticate user and get JWT token",
+      "authentication": "None",
+      "sampleRequest": {
+        "email": "john.doe@gmail.com",
+        "password": "Password123!"
+      },
+      "queryParams": [],
+      "pathParams": []
+    },
+    {
+      "priority": 3,
+      "step": "Update User Profile",
+      "method": "PUT",
+      "path": "/update",
+      "description": "Update user profile information",
+      "authentication": "JWT Token",
+      "sampleRequest": {
+        "username": "john_doe_updated",
+        "phoneNumber": "9876543210",
+        "dateOfBirth": "1990-05-15"
+      },
+      "queryParams": [
+        {
+          "name": "email",
+          "value": "john.doe@gmail.com",
+          "description": "User's email address"
+        }
+      ],
+      "pathParams": []
+    },
+    {
+      "priority": 4,
+      "step": "Soft Delete User",
+      "method": "DELETE",
+      "path": "/delete",
+      "description": "Soft delete user account",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [
+        {
+          "name": "email",
+          "value": "john.doe@gmail.com",
+          "description": "User's email address"
+        }
+      ],
+      "pathParams": []
+    },
+    {
+      "priority": 5,
+      "step": "Register Theater",
+      "method": "POST",
+      "path": "/theater/register",
+      "description": "Register a new theater (Theater Owner only)",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "sampleRequest": {
+        "name": "PVR Cinemas",
+        "address": "123 Main Street",
+        "city": "Bangalore",
+        "landmark": "Near Central Mall"
+      },
+      "queryParams": [
+        {
+          "name": "email",
+          "value": "theater.owner@gmail.com",
+          "description": "Theater owner's email"
+        }
+      ],
+      "pathParams": []
+    },
+    {
+      "priority": 6,
+      "step": "Get Theater Details",
+      "method": "GET",
+      "path": "/theater/{id}",
+      "description": "Get theater details by ID",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "id",
+          "value": "theater-123",
+          "description": "Theater ID"
+        }
+      ]
+    },
+    {
+      "priority": 7,
+      "step": "Update Theater",
+      "method": "PUT",
+      "path": "/theater/{id}",
+      "description": "Update theater details (Theater Owner only)",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "sampleRequest": {
+        "name": "PVR Cinemas - Updated",
+        "address": "456 New Street",
+        "city": "Bangalore",
+        "landmark": "Near Airport"
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "id",
+          "value": "theater-123",
+          "description": "Theater ID"
+        }
+      ]
+    },
+    {
+      "priority": 8,
+      "step": "Add Screen to Theater",
+      "method": "POST",
+      "path": "/screen",
+      "description": "Add a screen to a theater",
+      "authentication": "JWT Token",
+      "sampleRequest": {
+        "screenType": "THREE_D",
+        "capacity": 150,
+        "noOfRows": 10
+      },
+      "queryParams": [
+        {
+          "name": "theaterId",
+          "value": "theater-123",
+          "description": "Theater ID"
+        }
+      ],
+      "pathParams": []
+    },
+    {
+      "priority": 9,
+      "step": "Get Screen Details",
+      "method": "GET",
+      "path": "/screen/{screenId}",
+      "description": "Get screen details by ID",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "screenId",
+          "value": "screen-456",
+          "description": "Screen ID"
+        }
+      ]
+    },
+    {
+      "priority": 10,
+      "step": "Add Show to Screen",
+      "method": "POST",
+      "path": "/theaters/{theaterId}/screens/{screenId}/shows",
+      "description": "Add a show to a screen (Theater Owner only)",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "sampleRequest": {
+        "startTimeEpochMillis": 1735094400000,
+        "movieId": "movie-789"
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "theaterId",
+          "value": "theater-123",
+          "description": "Theater ID"
+        },
+        {
+          "name": "screenId",
+          "value": "screen-456",
+          "description": "Screen ID"
+        }
+      ]
+    },
+    {
+      "priority": 11,
+      "step": "Get Movie Details",
+      "method": "GET",
+      "path": "/movies/{movieId}",
+      "description": "Get movie details by ID",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 12,
+      "step": "Create Feedback for Movie",
+      "method": "POST",
+      "path": "/movies/{movieId}/feedback",
+      "description": "Create feedback for a movie (User only)",
+      "authentication": "JWT Token with ROLE_USER",
+      "sampleRequest": {
+        "rating": 5,
+        "review": "Excellent movie! Highly recommended."
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 13,
+      "step": "Get Feedbacks for Movie",
+      "method": "GET",
+      "path": "/movies/{movieId}/feedback",
+      "description": "Get all feedbacks for a movie",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    }
+  ]
+}

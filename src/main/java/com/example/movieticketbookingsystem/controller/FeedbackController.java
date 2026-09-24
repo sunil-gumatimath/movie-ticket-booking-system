@@ -26,7 +26,7 @@ public class FeedbackController {
     private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/movies/{movieId}/feedback")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<ResponseStructure<FeedbackResponse>> createFeedback(
             @PathVariable String movieId,
             @Valid @RequestBody FeedbackRequest feedbackRequest) {

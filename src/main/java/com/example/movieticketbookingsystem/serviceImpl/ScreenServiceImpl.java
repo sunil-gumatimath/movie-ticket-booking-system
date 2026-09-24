@@ -15,6 +15,7 @@ import com.example.movieticketbookingsystem.repository.TheaterRepository;
 import com.example.movieticketbookingsystem.service.ScreenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class ScreenServiceImpl implements ScreenService {
     private final ScreenMapper screenMapper;
 
     @Override
+    @Transactional
     public ScreenResponse addScreen(String theaterId, ScreenRequest screenRequest) {
         Optional<Theater> theaterOptional = theaterRepository.findById(theaterId);
 

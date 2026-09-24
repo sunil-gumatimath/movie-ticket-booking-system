@@ -21,7 +21,7 @@ public class ShowController {
     private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/{theaterId}/screens/{screenId}/shows")
-    @PreAuthorize("hasRole('THEATER_OWNER')")
+    @PreAuthorize("hasAuthority('ROLE_THEATER_OWNER')")
     public ResponseEntity<ResponseStructure<ShowResponse>> addShow(
             @PathVariable String theaterId,
             @PathVariable String screenId,

@@ -20,7 +20,7 @@ spring:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:pguQuMEr0QorbK6ZrCPITXw5/NRf7zRW2yjh4/WpN4c=}
+  secret: ${JWT_SECRET:VGhpcyBpcyBhIHZlcnkgbG9uZyBzZWNyZXQga2V5IGZvciBKV1Qgc2lnbmluZyB1c2luZyBIUzUxMiBhbGdvcml0aG0gd2hpY2ggcmVxdWlyZXMgYXQgbGVhc3QgNTEyIGJpdHM=}
   expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
 
 # Logging Configuration
