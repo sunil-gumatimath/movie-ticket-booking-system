@@ -8,6 +8,8 @@ import java.time.Instant;
 
 public interface ShowRepository extends JpaRepository<Shows, String> {
 
+    long countByScreenScreenId(String screenId);
+
     boolean existsByScreenAndStartsAtLessThanAndEndsAtGreaterThan(
             Screen screen, Instant endTime, Instant startTime
     );

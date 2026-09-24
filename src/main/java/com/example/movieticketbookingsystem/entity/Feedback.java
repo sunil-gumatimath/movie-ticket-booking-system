@@ -13,6 +13,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_feedback_user_movie", columnNames = {"user_id", "movie_id"}))
 @EntityListeners(AuditingEntityListener.class)
 public class Feedback {
 
@@ -21,11 +22,12 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String feedbackId;
 
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = false)
     private int rating;
 
-    @Column(name = "review",length = 500)
+    @Column(name = "review", length = 500, nullable = false)
     @NotBlank
+    @jakarta.validation.constraints.Size(max = 500)
     private String review;
 
     @Column(name = "created_at", nullable = false, updatable = false)

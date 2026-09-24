@@ -27,7 +27,10 @@ public class Screen {
     @Enumerated(EnumType.STRING)
     private ScreenType screenType;
 
+    @Column(nullable = false)
     private Integer capacity;
+
+    @Column(name = "no_of_rows", nullable = false)
     private Integer noOfRows;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -50,7 +53,7 @@ public class Screen {
     @JoinColumn(name = "theater_id", nullable = false)
     private Theater theater;
 
-    @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Seat> seats = new ArrayList<>();
 
     @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)

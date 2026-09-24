@@ -1,6 +1,7 @@
 package com.example.movieticketbookingsystem.dto.request;
 
 import com.example.movieticketbookingsystem.enums.ScreenType;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -10,10 +11,12 @@ public record ScreenRequest(
 
         @NotNull(message = "Capacity must not be null")
         @Min(value = 1, message = "Capacity must be at least 1")
+        @Max(value = 1000, message = "Capacity must not exceed 1000")
         Integer capacity,
 
         @NotNull(message = "Number of rows must not be null")
         @Min(value = 1, message = "Number of rows must be at least 1")
+        @Max(value = 26, message = "Number of rows must not exceed 26")
         Integer noOfRows
 
 ) {

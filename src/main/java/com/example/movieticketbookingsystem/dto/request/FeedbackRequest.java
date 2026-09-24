@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public record FeedbackRequest(
 
@@ -13,6 +14,7 @@ public record FeedbackRequest(
         int rating,
 
         @NotBlank(message = "Review cannot be blank.")
+        @Size(max = 500, message = "Review must not exceed 500 characters.")
         String review
 ) {
 }

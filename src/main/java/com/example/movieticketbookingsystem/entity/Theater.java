@@ -38,7 +38,7 @@ public class Theater {
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false, updatable = false)
+    @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
     private Instant updatedAt;
 

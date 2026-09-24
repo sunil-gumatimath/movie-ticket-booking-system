@@ -30,34 +30,38 @@ public class SeatServiceImpl implements SeatService {
         Screen existingScreen = screenRepository.findById(screen.getScreenId())
                 .orElseThrow(() -> new ScreenIdNotFoundException("Screen not found with ID: " + screen.getScreenId()));
 
-        int noOfRows = screen.getNoOfRows();
-        int capacity = screen.getCapacity();
-
-        if (noOfRows <= 0 || capacity <= 0) {
-            throw new IllegalArgumentException("Number of rows and capacity must be positive");
+        if (existingScreen.getSeats() != null && !existingScreen.getSeats().isEmpty()) {
+            return;
         }
 
-        if (capacity % noOfRows != 0) {
-            throw new IllegalArgumentException("Capacity must be evenly divisible by number of rows");
-        }
+        int noOfRows = existingScreen.getNoOfRows();
+        int capacity = existingScreen.getCapacity();
+        validateLayout(capacity, noOfRows);
 
         int seatsPerRow = capacity / noOfRows;
+        List<Seat> seatList = new ArrayList<>(capacity);
 
-        List<Seat> seatList = new ArrayList<>();
-        char rowName = 'A';
-
-        for (int i = 1; i <= noOfRows; i++) {
-            for (int j = 1; j <= seatsPerRow; j++) {
-                Seat newSeat = new Seat();
-                newSeat.setSeatName(rowName + String.valueOf(j));
-                newSeat.setScreen(existingScreen);
-                seatList.add(newSeat);
+        for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
+            char rowName = (char) ('A' + rowIndex);
+            for (int seatIndex = 1; seatIndex <= seatsPerRow; seatIndex++) {
+                Seat seat = new Seat();
+                seat.setSeatName(rowName + String.valueOf(seatIndex));
+                seat.setScreen(existingScreen);
+                seatList.add(seat);
             }
-            rowName++;
         }
 
         seatRepository.saveAll(seatList);
         existingScreen.setSeats(seatList);
         screenRepository.save(existingScreen);
+    }
+
+    private void validateLayout(int capacity, int noOfRows) {
+        if (capacity <= 0 || capacity > 1000 || noOfRows <= 0 || noOfRows > 26) {
+            throw new IllegalArgumentException("Screen capacity and rows are outside the supported range");
+        }
+        if (capacity % noOfRows != 0) {
+            throw new IllegalArgumentException("Capacity must be evenly divisible by number of rows");
+        }
     }
 }

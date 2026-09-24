@@ -2,7 +2,7 @@ package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.FeedbackRequest;
 import com.example.movieticketbookingsystem.dto.response.FeedbackResponse;
-import com.example.movieticketbookingsystem.serviceImpl.FeedbackServiceImpl;
+import com.example.movieticketbookingsystem.service.FeedbackService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedbackController {
 
-    private final FeedbackServiceImpl feedbackService;
+    private final FeedbackService feedbackService;
     private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/movies/{movieId}/feedback")

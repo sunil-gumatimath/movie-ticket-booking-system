@@ -49,9 +49,7 @@ public class FeedbackMapper {
                 feedback.getReview(),
                 feedback.getCreatedAt(),
                 feedback.getMovie().getMovieId(),
-                feedback.getMovie().getTitle(),
-                feedback.getUser().getUserId(),
-                feedback.getUser().getUsername()
+                feedback.getMovie().getTitle()
         );
     }
 }

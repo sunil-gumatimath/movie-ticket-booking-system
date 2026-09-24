@@ -45,8 +45,8 @@ public class Shows {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToOne
-    @JoinColumn(name = "screen_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "screen_id", nullable = false, unique = false)
     private Screen screen;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -8,8 +8,6 @@ public record FeedbackResponse(
         String review,
         Instant createdAt,
         String movieId,
-        String movieTitle,
-        String userId,
-        String username
+        String movieTitle
 ) {
 }

@@ -2,7 +2,7 @@ package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.ShowRequest;
 import com.example.movieticketbookingsystem.dto.response.ShowResponse;
-import com.example.movieticketbookingsystem.serviceImpl.ShowServiceImpl;
+import com.example.movieticketbookingsystem.service.ShowService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/theaters")
 public class ShowController {
 
-    private final ShowServiceImpl showService;
+    private final ShowService showService;
     private final RestResponseBuilder restResponseBuilder;
 
     @PostMapping("/{theaterId}/screens/{screenId}/shows")
