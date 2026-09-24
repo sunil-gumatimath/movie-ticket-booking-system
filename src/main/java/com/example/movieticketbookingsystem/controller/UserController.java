@@ -3,8 +3,6 @@ package com.example.movieticketbookingsystem.controller;
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.dto.request.UserRequest;
 import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
-import com.example.movieticketbookingsystem.entity.UserDetails;
-import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.serviceImpl.UserServiceImpl;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;

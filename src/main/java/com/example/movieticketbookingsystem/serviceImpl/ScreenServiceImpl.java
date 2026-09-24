@@ -3,7 +3,6 @@ package com.example.movieticketbookingsystem.serviceImpl;
 import com.example.movieticketbookingsystem.dto.request.ScreenRequest;
 import com.example.movieticketbookingsystem.dto.response.ScreenResponse;
 import com.example.movieticketbookingsystem.dto.response.ScreenResponseList;
-import com.example.movieticketbookingsystem.dto.response.SeatResponse;
 import com.example.movieticketbookingsystem.entity.Screen;
 import com.example.movieticketbookingsystem.entity.Seat;
 import com.example.movieticketbookingsystem.entity.Theater;

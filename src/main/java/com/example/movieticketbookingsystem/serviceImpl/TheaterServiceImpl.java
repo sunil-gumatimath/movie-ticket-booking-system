@@ -9,7 +9,6 @@ import com.example.movieticketbookingsystem.enums.UserRole;
 import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
 import com.example.movieticketbookingsystem.exception.UserNotFoundByEmailException;
 import com.example.movieticketbookingsystem.mapper.TheaterMapper;
-import com.example.movieticketbookingsystem.repository.TheaterOwnerRepository;
 import com.example.movieticketbookingsystem.repository.TheaterRepository;
 import com.example.movieticketbookingsystem.repository.UserRepository;
 import com.example.movieticketbookingsystem.service.TheaterService;
@@ -17,10 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,7 +25,6 @@ public class TheaterServiceImpl implements TheaterService {
 
     private final TheaterRepository theaterRepository;
     private final UserRepository userRepository;
-    private final TheaterOwnerRepository theaterOwnerRepository;
     private final TheaterMapper theaterMapper;
 
     @Override

@@ -8,8 +8,6 @@ import com.example.movieticketbookingsystem.entity.UserDetails;
 import com.example.movieticketbookingsystem.enums.UserRole;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 public class UserMapper {
 

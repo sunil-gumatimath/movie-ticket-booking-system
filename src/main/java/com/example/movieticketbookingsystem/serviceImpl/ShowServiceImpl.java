@@ -8,7 +8,6 @@ import com.example.movieticketbookingsystem.entity.Shows;
 import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.exception.ScreenIdNotFoundException;
 import com.example.movieticketbookingsystem.exception.MovieNotFoundByIdException;
-import com.example.movieticketbookingsystem.exception.TheaterOwnerIdException;
 import com.example.movieticketbookingsystem.exception.TheaterScreenMismatchException;
 import com.example.movieticketbookingsystem.exception.ConflictException;
 import com.example.movieticketbookingsystem.mapper.ShowMapper;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Service
 @AllArgsConstructor

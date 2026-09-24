@@ -13,8 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -64,8 +62,7 @@ public class UserServiceImpl implements UserService {
         if (user.isDeleted()) {
             throw new IllegalStateException("User already deleted.");
         }
-        user.setDeleted(true);
-        user.setDeletedAt(Instant.now());
+        user.softDelete();
         userRepository.save(user);
     }
 }

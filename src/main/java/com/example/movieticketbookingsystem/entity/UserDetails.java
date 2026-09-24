@@ -2,7 +2,6 @@ package com.example.movieticketbookingsystem.entity;
 
 import com.example.movieticketbookingsystem.enums.UserRole;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,7 +10,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

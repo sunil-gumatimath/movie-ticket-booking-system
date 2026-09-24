@@ -2,14 +2,11 @@ package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.TheaterRequest;
 import com.example.movieticketbookingsystem.dto.response.TheaterResponse;
-import com.example.movieticketbookingsystem.entity.Theater;
-import com.example.movieticketbookingsystem.entity.TheaterOwner;
 import com.example.movieticketbookingsystem.serviceImpl.TheaterServiceImpl;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

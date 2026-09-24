@@ -3,10 +3,8 @@ package com.example.movieticketbookingsystem.entity;
 import com.example.movieticketbookingsystem.enums.Certificate;
 import com.example.movieticketbookingsystem.enums.Genre;
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Duration;
 import java.util.List;
