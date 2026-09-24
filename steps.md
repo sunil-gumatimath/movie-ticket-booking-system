@@ -1,21 +1,35 @@
 # Movie Ticket Booking System API - Complete Usage Guide
 
-This guide provides step-by-step instructions for using the Movie Ticket Booking System API, organized by priority and typical user workflows.
+This guide describes the current 17-endpoint API in a practical setup and usage order. Replace UUIDs and timestamps with values from your environment.
 
 ## Prerequisites
 
-1. **Application Setup**: Ensure the Spring Boot application is running on `http://localhost:8080`
-2. **Database**: MySQL database is configured and running
-3. **Authentication**: JWT tokens are required for protected endpoints
+1. The Spring Boot application is running at `http://localhost:8080`.
+2. MySQL is configured and running.
+3. A strong `JWT_SECRET` is configured.
+4. JWT tokens are required for protected endpoints.
 
-## API Endpoints with Step-by-Step Usage
+## Common request headers
 
-### Step 1: User Registration
-**Endpoint**: `POST /register`  
-**Authentication**: None  
-**Description**: Register a new normal user account. Privileged roles are provisioned separately.
+For protected endpoints, send the token returned by `POST /login`:
 
-**Request**:
+```http
+Authorization: Bearer <your-jwt-token>
+```
+
+Request bodies should use:
+
+```http
+Content-Type: application/json
+```
+
+## Step-by-step usage
+
+### Step 1: Register a user
+
+**Endpoint**: `POST /register`
+**Authentication**: None
+
 ```json
 {
   "username": "john_doe123",
@@ -26,28 +40,30 @@ This guide provides step-by-step instructions for using the Movie Ticket Booking
 }
 ```
 
-**Response**:
+Public registration always creates `ROLE_USER`. Registration validation requires a Gmail address, a phone number beginning with `7`, `8`, or `9`, an 8–12 character password containing upper/lowercase letters, a digit, and a special character, and a past date of birth.
+
+Example response:
+
 ```json
 {
-  "statusCode": 201,
+  "status": 201,
   "message": "UserDetail Created",
   "data": {
     "userId": "uuid-string",
     "username": "john_doe123",
     "email": "john.doe@gmail.com",
-    "phoneNumber": "9876543210",
-    "dateOfBirth": "1990-05-15",
     "userRole": "ROLE_USER"
   }
 }
 ```
 
-### Step 2: User Login
-**Endpoint**: `POST /login`  
-**Authentication**: None  
-**Description**: Authenticate user and receive JWT token.
+Privileged roles are not assigned by this public request. There is no public role-promotion endpoint.
 
-**Request**:
+### Step 2: Log in
+
+**Endpoint**: `POST /login`
+**Authentication**: None
+
 ```json
 {
   "email": "john.doe@gmail.com",
@@ -55,26 +71,23 @@ This guide provides step-by-step instructions for using the Movie Ticket Booking
 }
 ```
 
-**Response** (Save the token for subsequent requests):
+Example response:
+
 ```json
 {
-  "statusCode": 200,
+  "status": 200,
   "message": "Login successful",
-  "data": "eyJhbGciOiJIUzI1NiJ9..."
+  "data": "eyJhbGciOiJIUzUxMiJ9..."
 }
 ```
 
-### Step 3: Update User Profile
-**Endpoint**: `PUT /update?email=john.doe@gmail.com`  
-**Authentication**: JWT Token  
-**Description**: Update user profile information.
+Save the token in `data` for subsequent requests.
 
-**Headers**:
-```
-Authorization: Bearer <your-jwt-token>
-```
+### Step 3: Update a user profile
 
-**Request**:
+**Endpoint**: `PUT /update?email=john.doe@gmail.com`
+**Authentication**: JWT for the target user or `ROLE_ADMIN`
+
 ```json
 {
   "username": "john_doe_updated",
@@ -83,36 +96,28 @@ Authorization: Bearer <your-jwt-token>
 }
 ```
 
-### Step 4: Soft Delete User Account
-**Endpoint**: `DELETE /delete?email=john.doe@gmail.com`  
-**Authentication**: JWT Token  
-**Description**: Soft delete user account.
+A user attempting to update another user's profile without `ROLE_ADMIN` receives `403 Forbidden`.
 
-**Headers**:
-```
-Authorization: Bearer <your-jwt-token>
-```
+### Step 4: Soft delete a user account
 
-**Response**:
+**Endpoint**: `DELETE /delete?email=john.doe@gmail.com`
+**Authentication**: JWT for the target user or `ROLE_ADMIN`
+
+Example response:
+
 ```json
 {
-  "statusCode": 200,
+  "status": 200,
   "message": "User account deleted successfully (soft delete).",
   "data": null
 }
 ```
 
-### Step 5: Theater Registration (Theater Owner Only)
+### Step 5: Register a theater
+
 **Endpoint**: `POST /theater/register`
-**Authentication**: JWT Token (**ROLE_THEATER_OWNER**)  
-**Description**: Register a new theater.
+**Authentication**: JWT with `ROLE_THEATER_OWNER`
 
-**Headers**:
-```
-Authorization: Bearer <theater-owner-jwt-token>
-```
-
-**Request**:
 ```json
 {
   "name": "PVR Cinemas",
@@ -122,17 +127,20 @@ Authorization: Bearer <theater-owner-jwt-token>
 }
 ```
 
-### Step 6: Get Theater Details
-**Endpoint**: `GET /theater/{id}`  
-**Authentication**: JWT Token  
-**Description**: Get theater details by ID.
+The theater is created for the authenticated owner.
 
-### Step 7: Update Theater (Theater Owner Only)
-**Endpoint**: `PUT /theater/{id}`  
-**Authentication**: JWT Token (**ROLE_THEATER_OWNER**)  
-**Description**: Update theater details.
+### Step 6: Get theater details
 
-**Request**:
+**Endpoint**: `GET /theater/{id}`
+**Authentication**: JWT token
+
+The response contains the theater identified by `{id}`.
+
+### Step 7: Update a theater
+
+**Endpoint**: `PUT /theater/{id}`
+**Authentication**: JWT with `ROLE_THEATER_OWNER`
+
 ```json
 {
   "name": "PVR Cinemas - Updated",
@@ -142,12 +150,13 @@ Authorization: Bearer <theater-owner-jwt-token>
 }
 ```
 
-### Step 8: Add Screen to Theater
-**Endpoint**: `POST /screen?theaterId={theaterId}`
-**Authentication**: JWT Token (**ROLE_THEATER_OWNER**)
-**Description**: Add a screen to a theater owned by the authenticated user.
+The theater must belong to the authenticated owner.
 
-**Request**:
+### Step 8: Add a screen
+
+**Endpoint**: `POST /screen?theaterId={theaterId}`
+**Authentication**: JWT with `ROLE_THEATER_OWNER`
+
 ```json
 {
   "screenType": "THREE_D",
@@ -156,19 +165,83 @@ Authorization: Bearer <theater-owner-jwt-token>
 }
 ```
 
-**Note**: `screenType` options: `TWO_D`, `THREE_D`, `IMAX`.
+The theater must belong to the authenticated owner. `screenType` can be `TWO_D`, `THREE_D`, or `IMAX`. Capacity must be `1`–`1000`, rows must be `1`–`26`, and capacity must be evenly divisible by the number of rows. The service generates the seat layout.
 
-### Step 9: Get Screen Details
-**Endpoint**: `GET /screen/{screenId}`  
-**Authentication**: JWT Token  
-**Description**: Get screen details by ID.
+### Step 9: Get screen details
 
-### Step 10: Add Show to Screen (Theater Owner Only)
-**Endpoint**: `POST /theaters/{theaterId}/screens/{screenId}/shows`  
-**Authentication**: JWT Token (**ROLE_THEATER_OWNER**)  
-**Description**: Add a show to a screen.
+**Endpoint**: `GET /screen/{screenId}`
+**Authentication**: JWT token
 
-**Request**:
+The response includes screen details and its generated seats.
+
+### Step 10: Create a movie
+
+**Endpoint**: `POST /movies`
+**Authentication**: JWT with `ROLE_ADMIN`
+
+```json
+{
+  "title": "Example Movie",
+  "description": "A movie description.",
+  "runtime": "PT2H",
+  "certificate": "UA",
+  "genre": "DRAMA",
+  "castList": [
+    "Actor One",
+    "Actor Two"
+  ]
+}
+```
+
+Allowed certificates are `U`, `UA`, `A`, and `S`. Allowed genres are `ACTION`, `ANIMATION`, `COMEDY`, `DRAMA`, `HORROR`, `ROMANCE`, `SCIENCE_FICTION`, and `THRILLER`. Runtime must be a positive ISO-8601 duration of no more than 24 hours.
+
+### Step 11: Update a movie title
+
+**Endpoint**: `PUT /movies/{movieId}`
+**Authentication**: JWT with `ROLE_ADMIN`
+
+```json
+{
+  "title": "Updated movie title"
+}
+```
+
+### Step 12: Update a movie description
+
+**Endpoint**: `PUT /movies/{movieId}/description`
+**Authentication**: JWT with `ROLE_ADMIN`
+
+```json
+{
+  "description": "Updated movie description."
+}
+```
+
+### Step 13: Update a movie cast
+
+**Endpoint**: `PUT /movies/{movieId}/cast`
+**Authentication**: JWT with `ROLE_ADMIN`
+
+```json
+{
+  "castList": [
+    "Updated Actor"
+  ]
+}
+```
+
+### Step 14: Get movie details
+
+**Endpoint**: `GET /movies/{movieId}`
+**Authentication**: JWT token
+
+The response includes the movie details and its average feedback rating.
+
+### Step 15: Add a show to a screen
+
+**Endpoint**: `POST /theaters/{theaterId}/screens/{screenId}/shows`
+**Authentication**: JWT with `ROLE_THEATER_OWNER`
+
 ```json
 {
   "startTimeEpochMillis": 1735094400000,
@@ -176,17 +249,13 @@ Authorization: Bearer <theater-owner-jwt-token>
 }
 ```
 
-### Step 11: Get Movie Details
-**Endpoint**: `GET /movies/{movieId}`  
-**Authentication**: JWT Token  
-**Description**: Get movie details by ID.
+The movie must already exist. The start time must not be in the past. The end time is calculated from the movie runtime. The theater and screen must belong to the authenticated owner. A show that overlaps an existing show on the same screen returns `409 Conflict`.
 
-### Step 12: Create Feedback for Movie (User Only)
-**Endpoint**: `POST /movies/{movieId}/feedback`  
-**Authentication**: JWT Token (**ROLE_USER**)  
-**Description**: Create feedback for a movie.
+### Step 16: Create feedback for a movie
 
-**Request**:
+**Endpoint**: `POST /movies/{movieId}/feedback`
+**Authentication**: JWT with an active `ROLE_USER` account
+
 ```json
 {
   "rating": 5,
@@ -194,47 +263,53 @@ Authorization: Bearer <theater-owner-jwt-token>
 }
 ```
 
-### Step 13: Get Feedbacks for Movie
-**Endpoint**: `GET /movies/{movieId}/feedback`  
-**Authentication**: JWT Token  
-**Description**: Get all feedbacks for a specific movie.
+The rating must be from `1` to `5`. The review must be nonblank and no longer than 500 characters. A user may submit only one feedback entry per movie. Theater-owner and administrator accounts cannot use this endpoint.
 
-## Authentication Headers
+### Step 17: Get feedback for a movie
 
-For protected endpoints, include the JWT token in the Authorization header:
+**Endpoint**: `GET /movies/{movieId}/feedback`
+**Authentication**: JWT token
 
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
-```
+The response contains all feedback entries for `{movieId}`.
 
-## Error Response Format
+## Error response format
 
-All endpoints return consistent error responses:
+Application errors use this structure:
 
 ```json
 {
   "statusCode": 400,
-  "message": "Validation failed",
-  "data": {
-    "field": "email",
-    "reason": "Enter a valid Gmail ID"
-  }
+  "error_message": "Validation failed for one or more fields",
+  "timestamp": "2026-09-24T12:00:00",
+  "path": null,
+  "data": [
+    {
+      "field": "email",
+      "rejectedValue": "invalid-email",
+      "errorMessage": "Enter a valid Gmail ID"
+    }
+  ]
 }
 ```
 
-## Common Status Codes
+The `path` property is currently `null` because the application does not populate it. Clients should use the HTTP status code and `error_message` for application errors.
 
-- `200` - Success (GET/PUT requests)
-- `201` - Created (POST requests)
-- `400` - Bad Request (validation errors)
-- `401` - Unauthorized (invalid/missing JWT)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found
-- `409` - Conflict
+## Common status codes
 
-## Workflow Summary
+- `200` — successful read, update, login, or delete.
+- `201` — resource created.
+- `400` — validation error or bad request.
+- `401` — missing or invalid JWT, or failed authentication.
+- `403` — insufficient role or resource ownership.
+- `404` — resource or route not found.
+- `405` — HTTP method not supported.
+- `409` — duplicate resource, invalid state, or overlapping show.
+- `500` — internal server error.
 
-1. **Register & Login**: Public registration creates `ROLE_USER`. Privileged accounts are provisioned separately.
-2. **Theater Management**: Owners register theaters, add screens, and then add shows.
-3. **Discovery**: Users browse movies and theaters.
-4. **Engagement**: Users leave feedback on movies they've watched.
+## Workflow summary
+
+1. **Register and log in:** Public registration creates `ROLE_USER`; privileged accounts are provisioned out of band.
+2. **Movie catalog:** An `ROLE_ADMIN` creates a movie before it can be scheduled.
+3. **Theater management:** An owner registers a theater, adds a screen, and schedules a show for an owned screen.
+4. **Lookup:** Use the ID-based movie, theater, screen, and feedback retrieval endpoints. There are currently no listing endpoints.
+5. **Feedback:** An active normal user submits and retrieves feedback for a movie.

@@ -5,7 +5,7 @@
       "step": "User Registration",
       "method": "POST",
       "path": "/register",
-      "description": "Register a new user account",
+      "description": "Register a new user account. Public registration always creates ROLE_USER.",
       "authentication": "None",
       "sampleRequest": {
         "username": "john_doe123",
@@ -22,7 +22,7 @@
       "step": "User Login",
       "method": "POST",
       "path": "/login",
-      "description": "Authenticate user and get JWT token",
+      "description": "Authenticate a user and get a JWT token.",
       "authentication": "None",
       "sampleRequest": {
         "email": "john.doe@gmail.com",
@@ -36,8 +36,8 @@
       "step": "Update User Profile",
       "method": "PUT",
       "path": "/update",
-      "description": "Update user profile information",
-      "authentication": "JWT Token",
+      "description": "Update a user profile. The authenticated user must be the target user or have ROLE_ADMIN.",
+      "authentication": "JWT Token for the target user or ROLE_ADMIN",
       "sampleRequest": {
         "username": "john_doe_updated",
         "phoneNumber": "9876543210",
@@ -47,7 +47,7 @@
         {
           "name": "email",
           "value": "john.doe@gmail.com",
-          "description": "User's email address"
+          "description": "Target user's email address"
         }
       ],
       "pathParams": []
@@ -57,14 +57,14 @@
       "step": "Soft Delete User",
       "method": "DELETE",
       "path": "/delete",
-      "description": "Soft delete user account",
-      "authentication": "JWT Token",
+      "description": "Soft delete a user account. The authenticated user must be the target user or have ROLE_ADMIN.",
+      "authentication": "JWT Token for the target user or ROLE_ADMIN",
       "sampleRequest": null,
       "queryParams": [
         {
           "name": "email",
           "value": "john.doe@gmail.com",
-          "description": "User's email address"
+          "description": "Target user's email address"
         }
       ],
       "pathParams": []
@@ -74,7 +74,7 @@
       "step": "Register Theater",
       "method": "POST",
       "path": "/theater/register",
-      "description": "Register a new theater (Theater Owner only)",
+      "description": "Register a theater for the authenticated theater owner.",
       "authentication": "JWT Token with ROLE_THEATER_OWNER",
       "sampleRequest": {
         "name": "PVR Cinemas",
@@ -90,7 +90,7 @@
       "step": "Get Theater Details",
       "method": "GET",
       "path": "/theater/{id}",
-      "description": "Get theater details by ID",
+      "description": "Get theater details by ID.",
       "authentication": "JWT Token",
       "sampleRequest": null,
       "queryParams": [],
@@ -107,8 +107,8 @@
       "step": "Update Theater",
       "method": "PUT",
       "path": "/theater/{id}",
-      "description": "Update theater details (Theater Owner only)",
-      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "description": "Update theater details. The theater must belong to the authenticated owner.",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER and theater ownership",
       "sampleRequest": {
         "name": "PVR Cinemas - Updated",
         "address": "456 New Street",
@@ -129,8 +129,8 @@
       "step": "Add Screen to Theater",
       "method": "POST",
       "path": "/screen",
-      "description": "Add a screen to a theater",
-      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "description": "Add a screen to a theater owned by the authenticated user. A seat layout is generated.",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER and theater ownership",
       "sampleRequest": {
         "screenType": "THREE_D",
         "capacity": 150,
@@ -150,7 +150,7 @@
       "step": "Get Screen Details",
       "method": "GET",
       "path": "/screen/{screenId}",
-      "description": "Get screen details by ID",
+      "description": "Get screen details, including its generated seat layout, by ID.",
       "authentication": "JWT Token",
       "sampleRequest": null,
       "queryParams": [],
@@ -164,11 +164,108 @@
     },
     {
       "priority": 10,
+      "step": "Create Movie",
+      "method": "POST",
+      "path": "/movies",
+      "description": "Create a movie in the catalog.",
+      "authentication": "JWT Token with ROLE_ADMIN",
+      "sampleRequest": {
+        "title": "Example Movie",
+        "description": "A movie description.",
+        "runtime": "PT2H",
+        "certificate": "UA",
+        "genre": "DRAMA",
+        "castList": [
+          "Actor One",
+          "Actor Two"
+        ]
+      },
+      "queryParams": [],
+      "pathParams": []
+    },
+    {
+      "priority": 11,
+      "step": "Update Movie Title",
+      "method": "PUT",
+      "path": "/movies/{movieId}",
+      "description": "Update a movie title.",
+      "authentication": "JWT Token with ROLE_ADMIN",
+      "sampleRequest": {
+        "title": "Updated movie title"
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 12,
+      "step": "Update Movie Description",
+      "method": "PUT",
+      "path": "/movies/{movieId}/description",
+      "description": "Update a movie description.",
+      "authentication": "JWT Token with ROLE_ADMIN",
+      "sampleRequest": {
+        "description": "Updated movie description."
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 13,
+      "step": "Update Movie Cast",
+      "method": "PUT",
+      "path": "/movies/{movieId}/cast",
+      "description": "Update a movie cast list.",
+      "authentication": "JWT Token with ROLE_ADMIN",
+      "sampleRequest": {
+        "castList": [
+          "Updated Actor"
+        ]
+      },
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 14,
+      "step": "Get Movie Details",
+      "method": "GET",
+      "path": "/movies/{movieId}",
+      "description": "Get movie details by ID, including the average rating.",
+      "authentication": "JWT Token",
+      "sampleRequest": null,
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "movieId",
+          "value": "movie-789",
+          "description": "Movie ID"
+        }
+      ]
+    },
+    {
+      "priority": 15,
       "step": "Add Show to Screen",
       "method": "POST",
       "path": "/theaters/{theaterId}/screens/{screenId}/shows",
-      "description": "Add a show to a screen (Theater Owner only)",
-      "authentication": "JWT Token with ROLE_THEATER_OWNER",
+      "description": "Add a show to an owned screen. The movie must exist and shows may not overlap.",
+      "authentication": "JWT Token with ROLE_THEATER_OWNER, theater ownership, and screen ownership",
       "sampleRequest": {
         "startTimeEpochMillis": 1735094400000,
         "movieId": "movie-789"
@@ -188,29 +285,12 @@
       ]
     },
     {
-      "priority": 11,
-      "step": "Get Movie Details",
-      "method": "GET",
-      "path": "/movies/{movieId}",
-      "description": "Get movie details by ID",
-      "authentication": "JWT Token",
-      "sampleRequest": null,
-      "queryParams": [],
-      "pathParams": [
-        {
-          "name": "movieId",
-          "value": "movie-789",
-          "description": "Movie ID"
-        }
-      ]
-    },
-    {
-      "priority": 12,
+      "priority": 16,
       "step": "Create Feedback for Movie",
       "method": "POST",
       "path": "/movies/{movieId}/feedback",
-      "description": "Create feedback for a movie (User only)",
-      "authentication": "JWT Token with ROLE_USER",
+      "description": "Create one feedback entry for a movie. Only an active normal user may submit feedback.",
+      "authentication": "JWT Token with active ROLE_USER account",
       "sampleRequest": {
         "rating": 5,
         "review": "Excellent movie! Highly recommended."
@@ -225,11 +305,11 @@
       ]
     },
     {
-      "priority": 13,
+      "priority": 17,
       "step": "Get Feedbacks for Movie",
       "method": "GET",
       "path": "/movies/{movieId}/feedback",
-      "description": "Get all feedbacks for a movie",
+      "description": "Get all feedback for a movie.",
       "authentication": "JWT Token",
       "sampleRequest": null,
       "queryParams": [],

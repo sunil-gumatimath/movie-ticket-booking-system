@@ -1,66 +1,92 @@
 # API Endpoints by Priority
 
+The current controller layer exposes 17 endpoints. The order below is a typical setup and usage order: create a movie before scheduling a show, because show creation requires an existing movie.
+
 ## Priority 1
-**POST** `/register` - Register new user
+**POST** `/register` - Register a new user account
 - Authentication: None
-- Description: Register a new user account
+- Public registration always creates `ROLE_USER`.
+- Validation requires a Gmail address, a valid phone number, a strong password, and a past date of birth.
 
 ## Priority 2
-**POST** `/login` - Login and get JWT token
+**POST** `/login` - Log in and get a JWT token
 - Authentication: None
-- Description: Authenticate user and get JWT token
+- Email is normalized before authentication.
 
 ## Priority 3
-**PUT** `/update?email={email}` - Update user profile
-- Authentication: JWT Token
-- Description: Update user profile information
+**PUT** `/update?email={email}` - Update a user profile
+- Authentication: JWT token for the target user or `ROLE_ADMIN`
+- Users may modify only their own account unless they are administrators.
 
 ## Priority 4
-**DELETE** `/delete?email={email}` - Soft delete user
-- Authentication: JWT Token
-- Description: Soft delete user account
+**DELETE** `/delete?email={email}` - Soft delete a user account
+- Authentication: JWT token for the target user or `ROLE_ADMIN`
+- Users may delete only their own account unless they are administrators.
 
 ## Priority 5
-**POST** `/theater/register` - Register theater for authenticated owner
-- Authentication: JWT Token with ROLE_THEATER_OWNER
-- Description: Register a new theater (Theater Owner only)
+**POST** `/theater/register` - Register a theater
+- Authentication: JWT with `ROLE_THEATER_OWNER`
+- The theater is created for the authenticated owner.
 
 ## Priority 6
 **GET** `/theater/{id}` - Get theater details
-- Authentication: JWT Token
-- Description: Get theater details by ID
+- Authentication: JWT token
+- Returns theater details by ID.
 
 ## Priority 7
-**PUT** `/theater/{id}` - Update theater (Theater Owner)
-- Authentication: JWT Token with ROLE_THEATER_OWNER
-- Description: Update theater details (Theater Owner only)
+**PUT** `/theater/{id}` - Update a theater
+- Authentication: JWT with `ROLE_THEATER_OWNER`
+- The theater must belong to the authenticated owner.
 
 ## Priority 8
-**POST** `/screen?theaterId={id}` - Add screen to theater
-- Authentication: JWT Token with ROLE_THEATER_OWNER
-- Description: Add a screen to your own theater
+**POST** `/screen?theaterId={theaterId}` - Add a screen to a theater
+- Authentication: JWT with `ROLE_THEATER_OWNER`
+- The theater must belong to the authenticated owner.
+- Capacity must be evenly divisible by the number of rows; a seat layout is generated.
 
 ## Priority 9
 **GET** `/screen/{screenId}` - Get screen details
-- Authentication: JWT Token
-- Description: Get screen details by ID
+- Authentication: JWT token
+- Returns screen details and the generated seat layout.
 
 ## Priority 10
-**POST** `/theaters/{theaterId}/screens/{screenId}/shows` - Add show to screen (Theater Owner)
-- Authentication: JWT Token with ROLE_THEATER_OWNER
-- Description: Add a show to a screen (Theater Owner only)
+**POST** `/movies` - Create a movie
+- Authentication: JWT with `ROLE_ADMIN`
+- Required fields: `title`, `description`, `runtime`, `certificate`, `genre`, and non-empty `castList`.
+- Runtime must be positive and no longer than 24 hours.
 
 ## Priority 11
-**GET** `/movies/{movieId}` - Get movie details
-- Authentication: JWT Token
-- Description: Get movie details by ID
+**PUT** `/movies/{movieId}` - Update movie title
+- Authentication: JWT with `ROLE_ADMIN`
+- Request body contains the new `title`.
 
 ## Priority 12
-**POST** `/movies/{movieId}/feedback` - Create feedback (User)
-- Authentication: JWT Token with ROLE_USER
-- Description: Create feedback for a movie (User only)
+**PUT** `/movies/{movieId}/description` - Update movie description
+- Authentication: JWT with `ROLE_ADMIN`
+- Request body contains the new `description`.
 
 ## Priority 13
-**GET** `/movies/{movieId}/feedback` - Get movie feedbacks
-- Authentication: JWT Token
-- Description: Get all feedbacks for a movie
+**PUT** `/movies/{movieId}/cast` - Update movie cast
+- Authentication: JWT with `ROLE_ADMIN`
+- Request body contains a non-empty `castList`.
+
+## Priority 14
+**GET** `/movies/{movieId}` - Get movie details
+- Authentication: JWT token
+- Returns movie details and the average feedback rating.
+
+## Priority 15
+**POST** `/theaters/{theaterId}/screens/{screenId}/shows` - Add a show to a screen
+- Authentication: JWT with `ROLE_THEATER_OWNER`
+- The theater and screen must belong to the authenticated owner.
+- The movie must exist, the start time must not be in the past, and overlapping shows return `409 Conflict`.
+
+## Priority 16
+**POST** `/movies/{movieId}/feedback` - Create feedback
+- Authentication: JWT with an active `ROLE_USER` account
+- A user may submit only one feedback entry per movie.
+
+## Priority 17
+**GET** `/movies/{movieId}/feedback` - Get feedback for a movie
+- Authentication: JWT token
+- Returns all feedback entries for the movie.
