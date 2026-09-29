@@ -15,9 +15,12 @@ import java.time.LocalDate;
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-@Table(name = "user_details")
+@Table(name = "user_details",
+        uniqueConstraints = @UniqueConstraint(name = AppUser.EMAIL_UNIQUE_CONSTRAINT, columnNames = "email"))
 @EntityListeners(AuditingEntityListener.class)
-public abstract class UserDetails {
+public abstract class AppUser {
+
+    public static final String EMAIL_UNIQUE_CONSTRAINT = "uk_user_details_email";
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,7 +29,7 @@ public abstract class UserDetails {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 320)
+    @Column(nullable = false, length = 320)
     private String email;
 
     @Column(nullable = false)

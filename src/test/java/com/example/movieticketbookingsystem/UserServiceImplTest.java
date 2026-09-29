@@ -3,11 +3,12 @@ package com.example.movieticketbookingsystem;
 import com.example.movieticketbookingsystem.dto.request.UserRegisterRequest;
 import com.example.movieticketbookingsystem.dto.request.UserRequest;
 import com.example.movieticketbookingsystem.entity.User;
-import com.example.movieticketbookingsystem.entity.UserDetails;
+import com.example.movieticketbookingsystem.entity.AppUser;
 import com.example.movieticketbookingsystem.enums.UserRole;
 import com.example.movieticketbookingsystem.mapper.UserMapper;
 import com.example.movieticketbookingsystem.repository.UserRepository;
-import com.example.movieticketbookingsystem.serviceImpl.UserServiceImpl;
+import com.example.movieticketbookingsystem.security.CurrentUserService;
+import com.example.movieticketbookingsystem.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,7 +29,8 @@ class UserServiceImplTest {
 
     private final UserRepository userRepository = mock(UserRepository.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-    private final UserServiceImpl service = new UserServiceImpl(userRepository, passwordEncoder, new UserMapper());
+    private final UserServiceImpl service = new UserServiceImpl(
+            userRepository, passwordEncoder, new UserMapper(), new CurrentUserService(userRepository));
 
     @AfterEach
     void clearSecurityContext() {
@@ -40,7 +42,7 @@ class UserServiceImplTest {
         UserRegisterRequest request = new UserRegisterRequest(
                 "user", "USER@GMAIL.COM", "9876543210", "Password123!", LocalDate.of(1990, 1, 1));
 
-        UserDetails user = new UserMapper().toEntity(request, "user@gmail.com");
+        AppUser user = new UserMapper().toEntity(request, "user@gmail.com");
 
         assertThat(user.getUserRole()).isEqualTo(UserRole.ROLE_USER);
     }

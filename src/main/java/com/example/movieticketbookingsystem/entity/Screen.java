@@ -57,5 +57,5 @@ public class Screen {
     private List<Seat> seats = new ArrayList<>();
 
     @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL)
-    private List<Shows> shows = new ArrayList<>();
+    private List<Show> shows = new ArrayList<>();
 }

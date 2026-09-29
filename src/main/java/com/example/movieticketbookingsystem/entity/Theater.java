@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -55,5 +56,5 @@ public class Theater {
     private TheaterOwner owner;
 
     @OneToMany(mappedBy = "theater")
-    private List<Screen> screen;
+    private List<Screen> screens = new ArrayList<>();
 }

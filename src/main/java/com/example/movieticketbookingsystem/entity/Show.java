@@ -16,7 +16,7 @@ import java.time.Instant;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "shows_table")
-public class Shows {
+public class Show {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,7 +46,7 @@ public class Shows {
     private String updatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "screen_id", nullable = false, unique = false)
+    @JoinColumn(name = "screen_id", nullable = false)
     private Screen screen;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,22 +1,23 @@
 package com.example.movieticketbookingsystem.security;
 
-import com.example.movieticketbookingsystem.entity.UserDetails;
+import com.example.movieticketbookingsystem.entity.AppUser;
 import com.example.movieticketbookingsystem.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = userRepository.findByEmail(username)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
         if (user.isDeleted()) {

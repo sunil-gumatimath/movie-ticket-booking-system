@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-public class TheaterOwner extends UserDetails {
+public class TheaterOwner extends AppUser {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Theater> theaters = new ArrayList<>();

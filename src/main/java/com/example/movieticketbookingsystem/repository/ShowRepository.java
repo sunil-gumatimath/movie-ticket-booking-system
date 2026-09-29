@@ -1,12 +1,12 @@
 package com.example.movieticketbookingsystem.repository;
 
 import com.example.movieticketbookingsystem.entity.Screen;
-import com.example.movieticketbookingsystem.entity.Shows;
+import com.example.movieticketbookingsystem.entity.Show;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.Instant;
 
-public interface ShowRepository extends JpaRepository<Shows, String> {
+public interface ShowRepository extends JpaRepository<Show, String> {
 
     long countByScreenScreenId(String screenId);
 

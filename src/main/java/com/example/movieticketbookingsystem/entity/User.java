@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "users")
-public class User extends UserDetails{
+public class User extends AppUser{
 
     @OneToMany(mappedBy = "user")
     private List<Feedback> feedbacks;

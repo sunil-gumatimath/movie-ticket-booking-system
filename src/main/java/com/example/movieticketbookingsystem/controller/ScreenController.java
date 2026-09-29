@@ -2,18 +2,18 @@ package com.example.movieticketbookingsystem.controller;
 
 import com.example.movieticketbookingsystem.dto.request.ScreenRequest;
 import com.example.movieticketbookingsystem.dto.response.ScreenResponse;
-import com.example.movieticketbookingsystem.dto.response.ScreenResponseList;
+import com.example.movieticketbookingsystem.dto.response.ScreenDetailResponse;
 import com.example.movieticketbookingsystem.service.ScreenService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 public class ScreenController {
 
@@ -30,8 +30,8 @@ public class ScreenController {
     }
 
     @GetMapping("/screen/{screenId}")
-    public ResponseEntity<ResponseStructure<ScreenResponseList>> findScreen(@PathVariable String screenId) {
-        ScreenResponseList screen = screenService.findScreen(screenId);
+    public ResponseEntity<ResponseStructure<ScreenDetailResponse>> findScreen(@PathVariable String screenId) {
+        ScreenDetailResponse screen = screenService.findScreen(screenId);
         return restResponseBuilder.success(HttpStatus.OK, "Screen Found", screen);
     }
 }

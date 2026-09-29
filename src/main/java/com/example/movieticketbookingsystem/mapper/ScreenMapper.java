@@ -1,17 +1,17 @@
 package com.example.movieticketbookingsystem.mapper;
 
 import com.example.movieticketbookingsystem.dto.response.ScreenResponse;
-import com.example.movieticketbookingsystem.dto.response.ScreenResponseList;
+import com.example.movieticketbookingsystem.dto.response.ScreenDetailResponse;
 import com.example.movieticketbookingsystem.dto.response.SeatResponse;
 import com.example.movieticketbookingsystem.entity.Screen;
 import com.example.movieticketbookingsystem.entity.Seat;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScreenMapper {
 
     private final SeatMapper seatMapper;
@@ -29,14 +29,14 @@ public class ScreenMapper {
         );
     }
 
-    public ScreenResponseList toScreenResponseList(Screen screen, List<Seat> seats) {
+    public ScreenDetailResponse toScreenDetailResponse(Screen screen, List<Seat> seats) {
         if (screen == null) {
             return null;
         }
 
         List<SeatResponse> seatResponses = seatMapper.toResponseList(seats);
 
-        return new ScreenResponseList(
+        return new ScreenDetailResponse(
                 screen.getScreenId(),
                 screen.getScreenType(),
                 screen.getCapacity(),

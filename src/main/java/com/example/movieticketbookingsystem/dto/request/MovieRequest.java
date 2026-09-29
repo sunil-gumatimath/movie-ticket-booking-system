@@ -5,6 +5,8 @@ import com.example.movieticketbookingsystem.enums.Genre;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.time.DurationMax;
+import org.hibernate.validator.constraints.time.DurationMin;
 
 import java.time.Duration;
 import java.util.Set;
@@ -18,6 +20,8 @@ public record MovieRequest(
         String description,
 
         @NotNull(message = "Movie runtime is required")
+        @DurationMin(nanos = 1, message = "Movie runtime must be positive")
+        @DurationMax(hours = 24, message = "Movie runtime must be no longer than 24 hours")
         Duration runtime,
 
         @NotNull(message = "Movie certificate is required")
@@ -27,6 +31,6 @@ public record MovieRequest(
         Genre genre,
 
         @NotEmpty(message = "Movie cast list cannot be empty")
-        Set<String> castList
+        Set<@NotBlank(message = "Cast member names cannot be blank") String> castList
 ) {
 }

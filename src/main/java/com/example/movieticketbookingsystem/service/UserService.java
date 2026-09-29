@@ -5,9 +5,10 @@ import com.example.movieticketbookingsystem.dto.request.UserRequest;
 import com.example.movieticketbookingsystem.dto.response.UserRegisterResponse;
 
 public interface UserService {
-    UserRegisterResponse addUserDetails(UserRegisterRequest userDetails);
 
-    UserRegisterResponse updateUser(String email, UserRequest userRequest);
+    UserRegisterResponse registerUser(UserRegisterRequest request);
 
-    void softDelete(String email);
+    UserRegisterResponse updateUser(String userId, UserRequest userRequest);
+
+    void softDelete(String userId);
 }

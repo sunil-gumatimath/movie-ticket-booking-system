@@ -4,5 +4,5 @@ import com.example.movieticketbookingsystem.entity.Screen;
 
 public interface SeatService {
 
-    public void generateSeatLayout(Screen screen);
+    void generateSeatLayout(Screen screen);
 }

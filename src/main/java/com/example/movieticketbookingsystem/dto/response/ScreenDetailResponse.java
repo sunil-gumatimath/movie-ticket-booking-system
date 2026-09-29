@@ -4,7 +4,7 @@ import com.example.movieticketbookingsystem.enums.ScreenType;
 
 import java.util.List;
 
-public record ScreenResponseList(
+public record ScreenDetailResponse(
         String screenId,
         ScreenType screenType,
         Integer capacity,

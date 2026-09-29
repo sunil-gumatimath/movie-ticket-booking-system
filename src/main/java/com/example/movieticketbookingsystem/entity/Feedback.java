@@ -2,6 +2,7 @@ package com.example.movieticketbookingsystem.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -13,9 +14,11 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "uk_feedback_user_movie", columnNames = {"user_id", "movie_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = Feedback.USER_MOVIE_UNIQUE_CONSTRAINT, columnNames = {"user_id", "movie_id"}))
 @EntityListeners(AuditingEntityListener.class)
 public class Feedback {
+
+    public static final String USER_MOVIE_UNIQUE_CONSTRAINT = "uk_feedback_user_movie";
 
     @Id
     @Column(name = "feedback_id")
@@ -27,7 +30,7 @@ public class Feedback {
 
     @Column(name = "review", length = 500, nullable = false)
     @NotBlank
-    @jakarta.validation.constraints.Size(max = 500)
+    @Size(max = 500)
     private String review;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -38,11 +41,11 @@ public class Feedback {
     @CreatedBy
     private String createdBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

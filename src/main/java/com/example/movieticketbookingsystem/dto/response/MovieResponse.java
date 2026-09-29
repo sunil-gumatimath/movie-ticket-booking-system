@@ -6,11 +6,14 @@ import com.example.movieticketbookingsystem.enums.Genre;
 import java.time.Duration;
 import java.util.Set;
 
+/**
+ * @param ratings average feedback rating (0 when there is no feedback), rounded to two decimals
+ */
 public record MovieResponse(
         String movieId,
         String title,
         String description,
-        String ratings,
+        double ratings,
         Duration runtime,
         Certificate certificate,
         Genre genre,

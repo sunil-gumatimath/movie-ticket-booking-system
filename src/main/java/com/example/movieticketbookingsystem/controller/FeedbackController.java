@@ -6,7 +6,10 @@ import com.example.movieticketbookingsystem.service.FeedbackService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
@@ -34,10 +37,12 @@ public class FeedbackController {
         return restResponseBuilder.success(HttpStatus.CREATED, "Feedback submitted successfully", feedbackResponse);
     }
 
+    /** Newest first. Supports {@code ?page=0&size=20}. */
     @GetMapping("/movies/{movieId}/feedback")
     public ResponseEntity<ResponseStructure<List<FeedbackResponse>>> getFeedbacksByMovie(
-            @PathVariable String movieId) {
-        List<FeedbackResponse> feedbacks = feedbackService.getFeedbacksByMovie(movieId);
+            @PathVariable String movieId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        List<FeedbackResponse> feedbacks = feedbackService.getFeedbacksByMovie(movieId, pageable);
         return restResponseBuilder.success(HttpStatus.OK, "Feedbacks retrieved successfully", feedbacks);
     }
 }

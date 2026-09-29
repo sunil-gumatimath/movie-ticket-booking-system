@@ -6,13 +6,13 @@ import com.example.movieticketbookingsystem.service.TheaterService;
 import com.example.movieticketbookingsystem.utility.ResponseStructure;
 import com.example.movieticketbookingsystem.utility.RestResponseBuilder;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 public class TheaterController {
 

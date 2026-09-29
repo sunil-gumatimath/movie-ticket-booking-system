@@ -2,7 +2,7 @@ package com.example.movieticketbookingsystem;
 
 import com.example.movieticketbookingsystem.entity.Movie;
 import com.example.movieticketbookingsystem.entity.Screen;
-import com.example.movieticketbookingsystem.entity.Shows;
+import com.example.movieticketbookingsystem.entity.Show;
 import com.example.movieticketbookingsystem.entity.Theater;
 import com.example.movieticketbookingsystem.entity.TheaterOwner;
 import com.example.movieticketbookingsystem.enums.Certificate;
@@ -73,15 +73,15 @@ class ShowPersistenceIntegrationTest {
         movieRepository.saveAndFlush(movie);
 
         Instant start = Instant.now().plusSeconds(3600);
-        Shows first = show(start, start.plusSeconds(3600), theater, screen, movie);
-        Shows second = show(start.plusSeconds(7200), start.plusSeconds(10800), theater, screen, movie);
+        Show first = show(start, start.plusSeconds(3600), theater, screen, movie);
+        Show second = show(start.plusSeconds(7200), start.plusSeconds(10800), theater, screen, movie);
         showRepository.saveAllAndFlush(java.util.List.of(first, second));
 
         assertThat(showRepository.countByScreenScreenId(screen.getScreenId())).isEqualTo(2);
     }
 
-    private Shows show(Instant start, Instant end, Theater theater, Screen screen, Movie movie) {
-        Shows show = new Shows();
+    private Show show(Instant start, Instant end, Theater theater, Screen screen, Movie movie) {
+        Show show = new Show();
         show.setTheater(theater);
         show.setScreen(screen);
         show.setMovie(movie);
