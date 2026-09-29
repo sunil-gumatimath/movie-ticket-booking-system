@@ -35,7 +35,7 @@
       "priority": 3,
       "step": "Update User Profile",
       "method": "PUT",
-      "path": "/update",
+      "path": "/users/{userId}",
       "description": "Update a user profile. The authenticated user must be the target user or have ROLE_ADMIN.",
       "authentication": "JWT Token for the target user or ROLE_ADMIN",
       "sampleRequest": {
@@ -43,31 +43,31 @@
         "phoneNumber": "9876543210",
         "dateOfBirth": "1990-05-15"
       },
-      "queryParams": [
+      "queryParams": [],
+      "pathParams": [
         {
-          "name": "email",
-          "value": "john.doe@gmail.com",
-          "description": "Target user's email address"
+          "name": "userId",
+          "value": "uuid-string",
+          "description": "Target user's ID (returned by POST /register and in the login JWT userId claim)"
         }
-      ],
-      "pathParams": []
+      ]
     },
     {
       "priority": 4,
       "step": "Soft Delete User",
       "method": "DELETE",
-      "path": "/delete",
+      "path": "/users/{userId}",
       "description": "Soft delete a user account. The authenticated user must be the target user or have ROLE_ADMIN.",
       "authentication": "JWT Token for the target user or ROLE_ADMIN",
       "sampleRequest": null,
-      "queryParams": [
+      "queryParams": [],
+      "pathParams": [
         {
-          "name": "email",
-          "value": "john.doe@gmail.com",
-          "description": "Target user's email address"
+          "name": "userId",
+          "value": "uuid-string",
+          "description": "Target user's ID (returned by POST /register and in the login JWT userId claim)"
         }
-      ],
-      "pathParams": []
+      ]
     },
     {
       "priority": 5,
@@ -309,10 +309,21 @@
       "step": "Get Feedbacks for Movie",
       "method": "GET",
       "path": "/movies/{movieId}/feedback",
-      "description": "Get all feedback for a movie.",
+      "description": "Get feedback for a movie, newest first, paginated.",
       "authentication": "JWT Token",
       "sampleRequest": null,
-      "queryParams": [],
+      "queryParams": [
+        {
+          "name": "page",
+          "value": "0",
+          "description": "Zero-based page index (default 0)"
+        },
+        {
+          "name": "size",
+          "value": "20",
+          "description": "Page size (default 20)"
+        }
+      ],
       "pathParams": [
         {
           "name": "movieId",

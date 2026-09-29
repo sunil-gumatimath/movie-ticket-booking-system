@@ -1,12 +1,20 @@
 # Production database migration and schema validation
 
-The application uses `JPA_DDL_AUTO=update` as a local-development default. Production deployments should set:
+The base configuration defaults to `JPA_DDL_AUTO=validate`; only the local `dev` profile (`application-dev.yml`) defaults to `update`. Production deployments must not activate the `dev` profile and should keep:
 
 ```bash
 JPA_DDL_AUTO=validate
 ```
 
 and should use a reviewed, versioned migration process before starting the application. This repository does not include Flyway or Liquibase migrations, and this document is a migration checklist/template rather than a complete fresh-install schema.
+
+## Upgrading an existing MySQL database
+
+The Java renames `UserDetails` → `AppUser` and `Shows` → `Show` did **not** rename their mapped tables: they remain `user_details` and `shows_table`. The user update/delete URL change and numeric movie ratings do not require a database column change. Do not rename tables based on Java class names.
+
+If an existing database already matches the entity mappings, it may need no SQL changes. Back it up first, inspect the indexes and data below, and validate it in staging. The email uniqueness rule now has the explicit name `uk_user_details_email`; an existing unique index on `user_details.email` may have another name. Do not add a second index merely to match the name—review the existing schema and the application's constraint-error handling together before deciding whether to rename an index.
+
+`JPA_DDL_AUTO=validate` checks the mapped schema but should **not** be relied on to prove that all unique indexes and business invariants exist. Inspect them separately. Never run the `dev` profile's `update` setting against an important existing database to resolve a validation error.
 
 ## Before changing a production database
 
@@ -81,11 +89,11 @@ ALTER TABLE user_details
     ADD CONSTRAINT uk_user_details_email UNIQUE (email);
 ```
 
-If the constraint already exists, do not add it again. Inspect `INFORMATION_SCHEMA.TABLE_CONSTRAINTS` first.
+If a unique index on `email` already exists under this or another name, do not add it again. Inspect `INFORMATION_SCHEMA.STATISTICS` and `INFORMATION_SCHEMA.TABLE_CONSTRAINTS` first; a name-only difference requires review because duplicate-registration error handling recognizes the named constraint.
 
 ### 2. Remove the legacy one-show-per-screen constraint
 
-The current `Shows.screen` mapping is many-to-one. Find indexes on the `shows_table.screen_id` column:
+The current `Show.screen` mapping is many-to-one. Find indexes on the `shows_table.screen_id` column:
 
 ```sql
 SELECT INDEX_NAME, NON_UNIQUE
@@ -139,7 +147,7 @@ ALTER TABLE feedback
     ADD CONSTRAINT uk_feedback_user_movie UNIQUE (user_id, movie_id);
 ```
 
-Skip any statement whose constraint already exists.
+Skip any statement whose columns already have the required unique index, even if its name differs. Review name differences because the application recognizes the named feedback constraint when translating concurrent duplicate inserts.
 
 ## Post-migration verification
 

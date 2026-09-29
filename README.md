@@ -2,8 +2,6 @@
 
 A Spring Boot REST API for managing users, theaters, screens, movies, shows, and movie feedback. The API uses JWT authentication and role-based authorization.
 
-> **Documentation scope:** This is the main project README. The package-level README at [`src/main/java/com/example/movieticketbookingsystem/README.md`](src/main/java/com/example/movieticketbookingsystem/README.md) documents exception handling.
-
 ## Features
 
 ### User and authentication management
@@ -55,14 +53,21 @@ Install the following before running the application:
 
 ```bash
 git clone https://github.com/sunil-gumatimath/movie-ticket-booking-system.git
-cd movie-ticket-booking-system-api
+cd movie-ticket-booking-system
 ```
 
 ### 2. Configure the database
 
-The application reads database settings from environment variables. Defaults are defined in [`src/main/resources/application.yml`](src/main/resources/application.yml):
+The application reads database settings from environment variables. Configuration is split into two files:
+
+- [`application.yml`](src/main/resources/application.yml) is the base configuration. It has no credential defaults (`DB_USERNAME` and `DB_PASSWORD` are required), uses `JPA_DDL_AUTO=validate`, and logs at `INFO`.
+- [`application-dev.yml`](src/main/resources/application-dev.yml) is the local development profile. It defaults to `root`/`root`, creates the database if missing, uses `JPA_DDL_AUTO=update`, and enables SQL and `DEBUG` logging.
+
+For local development, activate the `dev` profile. Set `JWT_SECRET` as shown below; the database values here are optional overrides, not required setup. Change the default `root`/`root` credentials if your local MySQL uses another account:
 
 ```bash
+export SPRING_PROFILES_ACTIVE=dev
+# Optional overrides; the dev profile defaults to these values.
 export DB_HOST=localhost
 export DB_PORT=3306
 export DB_NAME=movie-ticket-booking-app-db
@@ -70,19 +75,17 @@ export DB_USERNAME=root
 export DB_PASSWORD=root
 ```
 
-The application uses `JPA_DDL_AUTO=update` by default for local development. Production must use `JPA_DDL_AUTO=validate` and follow the reviewed migration guidance in [`docs/production-migration.md`](docs/production-migration.md).
+Never use the `dev` profile in a deployed environment. Production must use `JPA_DDL_AUTO=validate` (the base default) and follow the reviewed migration guidance in [`docs/production-migration.md`](docs/production-migration.md).
 
 ### 3. Configure JWT and CORS
 
-The application requires a strong externally supplied secret in every environment. Set your own values for deployments:
+The application requires a strong externally supplied secret in every environment. For example, generate and export one locally with:
 
 ```bash
-export JWT_SECRET='<base64-encoded-secret-at-least-64-bytes>'
-export CORS_ALLOWED_ORIGINS='https://app.example.com'
-export JWT_EXPIRATION=86400000
+export JWT_SECRET="$(openssl rand -base64 64)"
 ```
 
-`JWT_SECRET` must decode to at least 64 bytes for HS512. The application fails to start if it is missing or too short. `JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours. The default CORS origin is `http://localhost:3000`; set an explicit production origin.
+`JWT_SECRET` must decode to at least 64 bytes for HS512. The application fails to start if it is missing or too short. Generate and store a fresh secret for each environment; do not commit it. `JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours. The default CORS origin is `http://localhost:3000`; set `CORS_ALLOWED_ORIGINS` to your frontend's origin in production.
 
 ### 4. Build and run
 
@@ -91,7 +94,11 @@ mvn clean compile
 mvn spring-boot:run
 ```
 
-The application starts at `http://localhost:8080` by default.
+This assumes `SPRING_PROFILES_ACTIVE=dev` was exported in step 2. The application starts at `http://localhost:8080` by default.
+
+### Existing MySQL databases
+
+The Java renames did not rename the `user_details` or `shows_table` tables. An existing database may need no SQL change. Back it up, inspect its unique indexes, and run with the base configuration's `JPA_DDL_AUTO=validate` in staging before deploying. Do not use the `dev` profile's automatic schema update on important data. See the [upgrade checklist](docs/production-migration.md#upgrading-an-existing-mysql-database).
 
 ## API conventions
 
@@ -138,8 +145,10 @@ Request:
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | `POST` | `/register` | Register a user account | Public |
-| `PUT` | `/update?email={email}` | Update a user profile | Authenticated target user or `ROLE_ADMIN` |
-| `DELETE` | `/delete?email={email}` | Soft delete a user account | Authenticated target user or `ROLE_ADMIN` |
+| `PUT` | `/users/{userId}` | Update a user profile | Authenticated target user or `ROLE_ADMIN` |
+| `DELETE` | `/users/{userId}` | Soft delete a user account | Authenticated target user or `ROLE_ADMIN` |
+
+The `userId` is returned by `POST /register` and is included as the `userId` claim in the login JWT.
 
 Registration request:
 
@@ -155,7 +164,7 @@ Registration request:
 
 Registration always creates `ROLE_USER`. The response data contains `userId`, `username`, `email`, and `userRole`; it does not return the password or phone number. Privileged accounts must be provisioned through a trusted process because no public promotion endpoint exists.
 
-Registration constraints: email must be a Gmail address; username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–12 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past.
+Registration constraints: email must be a Gmail address; username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–64 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past.
 
 Update profile request:
 
@@ -167,7 +176,7 @@ Update profile request:
 }
 ```
 
-A user attempting to update or delete another user's account without `ROLE_ADMIN` receives `403 Forbidden`.
+A user attempting to update or delete another user's account without `ROLE_ADMIN` receives `403 Forbidden`. An unknown or already-deleted `userId` returns `404 Not Found`.
 
 ### Theater management
 
@@ -234,7 +243,7 @@ Allowed certificates: `U`, `UA`, `A`, and `S`.
 
 Allowed genres: `ACTION`, `ANIMATION`, `COMEDY`, `DRAMA`, `HORROR`, `ROMANCE`, `SCIENCE_FICTION`, and `THRILLER`.
 
-Runtime must be a positive ISO-8601 duration of no more than 24 hours. Update request bodies are:
+Runtime must be a positive ISO-8601 duration of no more than 24 hours. Cast names must be nonblank. Movie responses include `ratings`, the average feedback rating as a number rounded to two decimals (`0` when there is no feedback). Update request bodies are:
 
 ```json
 { "title": "Updated movie title" }
@@ -263,7 +272,7 @@ Show request body:
 }
 ```
 
-The movie must already exist. The start time must not be in the past. The end time is calculated from the movie runtime. A show that overlaps an existing show on the same screen returns `409 Conflict`.
+The movie must already exist. A start time in the past, or a screen that does not belong to the given theater, returns `400 Bad Request`. The end time is calculated from the movie runtime. A show that overlaps an existing show on the same screen returns `409 Conflict`.
 
 ### Feedback system
 
@@ -283,14 +292,16 @@ Feedback request body:
 
 The rating must be between `1` and `5`; the review must be nonblank and no longer than 500 characters. A user may submit only one feedback entry per movie.
 
+`GET /movies/{movieId}/feedback` is paginated and returns newest first. Use `?page=0&size=20` (the defaults) to page through results.
+
 ## Complete endpoint summary
 
 | # | Method | Endpoint | Access |
 |---:|---|---|---|
 | 1 | `POST` | `/register` | Public |
 | 2 | `POST` | `/login` | Public |
-| 3 | `PUT` | `/update?email={email}` | Authenticated target user or `ROLE_ADMIN` |
-| 4 | `DELETE` | `/delete?email={email}` | Authenticated target user or `ROLE_ADMIN` |
+| 3 | `PUT` | `/users/{userId}` | Authenticated target user or `ROLE_ADMIN` |
+| 4 | `DELETE` | `/users/{userId}` | Authenticated target user or `ROLE_ADMIN` |
 | 5 | `POST` | `/theater/register` | `ROLE_THEATER_OWNER` |
 | 6 | `GET` | `/theater/{id}` | JWT token |
 | 7 | `PUT` | `/theater/{id}` | `ROLE_THEATER_OWNER` and theater owner |
@@ -305,7 +316,7 @@ The rating must be between `1` and `5`; the review must be nonblank and no longe
 | 16 | `POST` | `/movies/{movieId}/feedback` | Active `ROLE_USER` |
 | 17 | `GET` | `/movies/{movieId}/feedback` | JWT token |
 
-For a machine-readable endpoint list, see [`api_endpoints.json`](api_endpoints.json). For a priority-based short reference, see [`apiendpointpriority.md`](apiendpointpriority.md). For step-by-step examples, see [`steps.md`](steps.md).
+For a machine-readable endpoint list, see [`api_endpoints.json`](api_endpoints.json).
 
 ## Authentication and authorization
 
@@ -328,7 +339,7 @@ Public documentation routes:
 - `/swagger-resources/**`
 - `/webjars/**`
 
-Method-level and service-level authorization apply these additional restrictions:
+Role checks use `@PreAuthorize` on controllers. Resource ownership (which theater or account the caller may change) is checked in services through `CurrentUserService`. The additional restrictions are:
 
 - `ROLE_THEATER_OWNER`: theater registration, theater updates, screen creation, and show creation for owned resources.
 - `ROLE_ADMIN`: movie catalog management and any-user profile administration.
@@ -354,8 +365,8 @@ Validation and application errors use an error structure with these properties:
 {
   "statusCode": 400,
   "error_message": "Validation failed for one or more fields",
-  "timestamp": "2026-09-24T12:00:00",
-  "path": null,
+  "timestamp": "2026-09-24T06:30:00.123Z",
+  "path": "/register",
   "data": [
     {
       "field": "email",
@@ -366,7 +377,7 @@ Validation and application errors use an error structure with these properties:
 }
 ```
 
-The current implementation populates `statusCode`, `error_message`, `timestamp`, and validation `data`; `path` is currently `null`. Clients should use the HTTP status code and `error_message` for application errors.
+Every error, including security errors raised before a controller runs, populates `statusCode`, `error_message`, a UTC `timestamp`, and the request `path`. Validation errors also include `data`. `rejectedValue` is omitted for password fields. Clients should use the HTTP status code and `error_message` for application errors.
 
 Common HTTP status codes:
 
@@ -380,7 +391,7 @@ Common HTTP status codes:
 - `409` — state conflict, duplicate resource, or overlapping show.
 - `500` — internal server error.
 
-For exception-handling details, see [`src/main/java/com/example/movieticketbookingsystem/README.md`](src/main/java/com/example/movieticketbookingsystem/README.md).
+Errors raised in controllers and services are handled by `GlobalExceptionHandler`; missing or invalid JWTs are handled by `JsonSecurityErrorHandler` before reaching a controller.
 
 ## Testing
 
