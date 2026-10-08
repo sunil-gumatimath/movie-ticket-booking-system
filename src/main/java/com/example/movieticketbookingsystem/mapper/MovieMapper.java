@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 public class MovieMapper {
 
     public Movie movieEntityMapper(MovieRequest request) {
+        if (request == null) {
+            return null;
+        }
         Movie movie = new Movie();
         movie.setTitle(request.title());
         movie.setDescription(request.description());
