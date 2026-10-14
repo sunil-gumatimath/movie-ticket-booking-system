@@ -14,6 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+app:
+  cors:
+    # 5173 = Vite dev server (cinebook-web), 3000 = default CRA origin.
+    allowed-origins: http://localhost:5173,http://localhost:3000
+
 logging:
   level:
     com.example.movieticketbookingsystem: DEBUG
