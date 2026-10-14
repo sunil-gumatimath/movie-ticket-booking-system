@@ -37,7 +37,7 @@ public class Feedback {
     @CreatedDate
     private Instant createdAt;
 
-    @Column(name = "created_by", nullable = false, updatable = false)
+    @Column(name = "created_by", length = 320, nullable = false, updatable = false)
     @CreatedBy
     private String createdBy;
 

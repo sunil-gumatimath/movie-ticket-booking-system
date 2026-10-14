@@ -37,11 +37,11 @@ public class Show {
     @LastModifiedDate
     private Instant updatedAt;
 
-    @Column(name = "created_by", nullable = false, updatable = false)
+    @Column(name = "created_by", length = 320, nullable = false, updatable = false)
     @CreatedBy
     private String createdBy;
 
-    @Column(name = "updated_by", nullable = false)
+    @Column(name = "updated_by", length = 320, nullable = false)
     @LastModifiedBy
     private String updatedBy;
 

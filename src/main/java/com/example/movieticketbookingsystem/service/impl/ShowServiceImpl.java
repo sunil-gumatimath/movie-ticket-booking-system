@@ -53,6 +53,9 @@ public class ShowServiceImpl implements ShowService {
             throw new BadRequestException("Show start time cannot be in the past");
         }
         // Movie runtime is validated (positive, at most 24h) when the movie is created.
+        if (movie.getRuntime() == null) {
+            throw new BadRequestException("Movie runtime is not configured");
+        }
         Instant endsAt = startsAt.plus(movie.getRuntime());
 
         if (showRepository.existsByScreenAndStartsAtLessThanAndEndsAtGreaterThan(screen, endsAt, startsAt)) {
@@ -69,3 +72,4 @@ public class ShowServiceImpl implements ShowService {
         return showMapper.toShowResponse(showRepository.save(show));
     }
 }
+

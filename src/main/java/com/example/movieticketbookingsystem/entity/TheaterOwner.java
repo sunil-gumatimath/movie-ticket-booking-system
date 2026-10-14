@@ -13,9 +13,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@DiscriminatorValue("TheaterOwner")
 public class TheaterOwner extends AppUser {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Theater> theaters = new ArrayList<>();
 
 }
+
+
+
+

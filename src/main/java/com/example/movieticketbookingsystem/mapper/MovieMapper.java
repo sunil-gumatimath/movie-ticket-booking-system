@@ -13,12 +13,12 @@ public class MovieMapper {
             return null;
         }
         Movie movie = new Movie();
-        movie.setTitle(request.title());
-        movie.setDescription(request.description());
+        movie.setTitle(request.title().trim());
+        movie.setDescription(request.description().trim());
         movie.setRuntime(request.runtime());
         movie.setCertificate(request.certificate());
         movie.setGenre(request.genre());
-        movie.setCastList(request.castList());
+        movie.setCastList(request.castList().stream().map(String::trim).collect(java.util.stream.Collectors.toSet()));
         return movie;
     }
 
@@ -39,3 +39,4 @@ public class MovieMapper {
         );
     }
 }
+

@@ -61,3 +61,6 @@ public abstract class AppUser {
         this.deletedAt = Instant.now();
     }
 }
+
+
+

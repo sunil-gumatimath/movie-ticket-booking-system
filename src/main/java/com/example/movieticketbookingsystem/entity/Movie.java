@@ -29,7 +29,7 @@ public class Movie {
     @ElementCollection
     private Set<String> castList;
 
-    @Column(name = "runtime")
+    @Column(name = "runtime", nullable = false)
     private Duration runtime;
 
     @Enumerated(EnumType.STRING)

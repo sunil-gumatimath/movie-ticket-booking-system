@@ -56,7 +56,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public MovieResponse updateMovieCast(String movieId, MovieCastUpdateRequest request) {
         Movie movie = findMovie(movieId);
-        movie.setCastList(new HashSet<>(request.castList()));
+        movie.setCastList(request.castList().stream().map(String::trim).collect(java.util.stream.Collectors.toSet()));
         return toResponse(movie);
     }
 
@@ -75,3 +75,4 @@ public class MovieServiceImpl implements MovieService {
         return movieMapper.movieResponseMapper(movie, feedbackRepository.findAverageRatingByMovieId(movie.getMovieId()));
     }
 }
+

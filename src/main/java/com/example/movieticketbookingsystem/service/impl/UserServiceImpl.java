@@ -33,9 +33,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserRegisterResponse registerUser(UserRegisterRequest request) {
         String email = Emails.normalize(request.email());
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndIsDeletedFalse(email)) {
             throw new ConflictException(EMAIL_TAKEN);
         }
+
+        // Free the email address from any previously soft-deleted account so it can be reused.
+        userRepository.deleteByEmailAndIsDeletedTrue(email);
 
         AppUser user = userMapper.toEntity(request, email);
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -75,3 +78,4 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 }
+

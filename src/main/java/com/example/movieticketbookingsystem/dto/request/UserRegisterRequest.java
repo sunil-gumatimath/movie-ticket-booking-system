@@ -13,7 +13,7 @@ public record UserRegisterRequest(
         String username,
 
         @NotBlank(message = "Email cannot be blank")
-        @Email(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Enter a valid Gmail ID")
+        @Email(regexp = "(?i)^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Enter a valid Gmail ID")
         String email,
 
         @NotBlank(message = "Phone number cannot be blank")
@@ -31,3 +31,4 @@ public record UserRegisterRequest(
         @Past(message = "Date of birth must be in the past")
         LocalDate dateOfBirth
 ) {}
+
