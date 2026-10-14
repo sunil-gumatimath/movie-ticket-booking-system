@@ -58,6 +58,23 @@ Install the following before running the application:
 
 ## Setup and installation
 
+### Option A — Docker
+
+A `Dockerfile` and a compose stack covering MySQL, the API, and the frontend live in the parent
+directory alongside both repositories. See [`../DOCKER.md`](../DOCKER.md).
+
+```bash
+cd ..
+cp .env.example .env   # then set JWT_SECRET
+docker compose up --build
+```
+
+The image is multi-stage: `maven:3.9-eclipse-temurin-21` resolves dependencies and packages the
+jar, then only the runtime JRE and the jar are copied into `eclipse-temurin:21-jre-alpine`. It runs
+as a non-root user and exposes a healthcheck against `/v3/api-docs`.
+
+### Option B — local development
+
 ### 1. Clone the repository
 
 ```bash

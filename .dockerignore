@@ -1,0 +1,29 @@
+# Build artefacts
+target/
+*.jar
+*.war
+!.mvn/wrapper/maven-wrapper.jar
+
+# Git / IDE
+.git/
+.gitignore
+.gitattributes
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.delta/
+.qodo/
+
+# Local config and secrets
+.env
+.env.*
+!.env.example
+application-local.yml
+
+# Docs and helper files
+README.md
+docs/
+api_endpoints.json
+start
