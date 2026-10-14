@@ -2,6 +2,15 @@
 
 A Spring Boot REST API for managing users, theaters, screens, movies, shows, and movie feedback. The API uses JWT authentication and role-based authorization.
 
+> **Frontend (React 19 + TypeScript SPA):** [`sunil-gumatimath/cinebook-web`](https://github.com/sunil-gumatimath/cinebook-web) — Vite, Tailwind CSS, shadcn/ui, TanStack Query. It runs on `http://localhost:5173` in development and talks to this API through a Vite proxy.
+
+## Related repositories
+
+| Repo | Role | Link |
+|------|------|------|
+| `movie-ticket-booking-system` (this) | Spring Boot 3 REST API (Java 17, MySQL, JWT, Swagger) | https://github.com/sunil-gumatimath/movie-ticket-booking-system |
+| `cinebook-web` | React 19 + TypeScript SPA (Vite, Tailwind, shadcn/ui) | https://github.com/sunil-gumatimath/cinebook-web |
+
 ## Features
 
 ### User and authentication management
@@ -85,7 +94,7 @@ The application requires a strong externally supplied secret in every environmen
 export JWT_SECRET="$(openssl rand -base64 64)"
 ```
 
-`JWT_SECRET` must decode to at least 64 bytes for HS512. The application fails to start if it is missing or too short. Generate and store a fresh secret for each environment; do not commit it. `JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours. The default CORS origin is `http://localhost:3000`; set `CORS_ALLOWED_ORIGINS` to your frontend's origin in production.
+`JWT_SECRET` must decode to at least 64 bytes for HS512. The application fails to start if it is missing or too short. Generate and store a fresh secret for each environment; do not commit it. `JWT_EXPIRATION` is measured in milliseconds and defaults to 24 hours. The default CORS origin is `http://localhost:3000`; set `CORS_ALLOWED_ORIGINS` to your frontend's origin in production. The `dev` profile additionally allows `http://localhost:5173`, where the `cinebook-web` Vite dev server runs.
 
 ### 4. Build and run
 
