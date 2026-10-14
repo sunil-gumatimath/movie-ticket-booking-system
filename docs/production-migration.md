@@ -193,3 +193,9 @@ JPA_DDL_AUTO=validate
 ```
 
 The application deliberately fails startup when `JWT_SECRET` is absent or too short for HS512.
+
+
+## Additional schema requirements
+
+- Audit columns created_by/updated_by on screen, 	heater, shows_table, and eedback must accept at least 320 characters because they store the caller's normalized email.
+

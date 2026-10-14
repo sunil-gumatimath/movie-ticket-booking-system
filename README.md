@@ -164,7 +164,7 @@ Registration request:
 
 Registration always creates `ROLE_USER`. The response data contains `userId`, `username`, `email`, and `userRole`; it does not return the password or phone number. Privileged accounts must be provisioned through a trusted process because no public promotion endpoint exists.
 
-Registration constraints: email must be a Gmail address; username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–64 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past.
+Registration constraints: email must be a Gmail address (validated case-insensitively); username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–64 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past. A soft-deleted account's email address can be reused for a new registration.
 
 Update profile request:
 
@@ -404,3 +404,6 @@ mvn test
 ## Dependencies
 
 Key dependencies include Spring Web, Spring Data JPA, Spring Security, JJWT, MySQL Connector/J, Lombok, Spring Validation, and springdoc-openapi.
+
+
+
