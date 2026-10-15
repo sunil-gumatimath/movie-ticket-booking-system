@@ -1,5 +1,5 @@
 # ---------- build stage ----------
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /build
 
@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn -B -q clean package -DskipTests
 
 # ---------- runtime stage ----------
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:17-jre-alpine AS runtime
 
 # curl is used by the container healthcheck below.
 RUN apk add --no-cache curl \
@@ -25,8 +25,9 @@ USER spring:spring
 
 EXPOSE 8080
 
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0" \
-    SPRING_PROFILES_ACTIVE=dev
+# No profile is baked in: the base configuration is production-safe (ddl-auto=validate).
+# Local development opts into the `dev` profile explicitly, e.g. via docker-compose.
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0"
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=10 \
   CMD curl -fsS http://localhost:8080/v3/api-docs > /dev/null || exit 1
