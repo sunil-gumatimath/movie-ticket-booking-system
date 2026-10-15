@@ -4,10 +4,6 @@ A Spring Boot REST API for managing users, theaters, screens, movies, shows, and
 
 > **Frontend (React 19 + TypeScript SPA):** [`sunil-gumatimath/cinebook-web`](https://github.com/sunil-gumatimath/cinebook-web) — Vite, Tailwind CSS, shadcn/ui, TanStack Query. It runs on `http://localhost:5173` in development and talks to this API through a Vite proxy.
 
-> **Workspace:** this repository is the backend half of the CineBook monorepo. The
-> [root README](../README.md) covers the full Docker stack (MySQL + API + SPA), environment
-> variables, and service URLs.
-
 ## Related repositories
 
 | Repo | Role | Link |
@@ -65,7 +61,7 @@ Install the following before running the application:
 ### Option A — Docker
 
 A `Dockerfile` and a compose stack covering MySQL, the API, and the frontend live in the parent
-directory alongside both repositories — see the [root README](../README.md).
+directory alongside both repositories.
 
 ```bash
 cd ..
