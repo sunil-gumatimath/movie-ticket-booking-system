@@ -4,6 +4,10 @@ A Spring Boot REST API for managing users, theaters, screens, movies, shows, and
 
 > **Frontend (React 19 + TypeScript SPA):** [`sunil-gumatimath/cinebook-web`](https://github.com/sunil-gumatimath/cinebook-web) — Vite, Tailwind CSS, shadcn/ui, TanStack Query. It runs on `http://localhost:5173` in development and talks to this API through a Vite proxy.
 
+> **Workspace:** this repository is the backend half of the CineBook monorepo. The
+> [root README](../README.md) covers the full Docker stack (MySQL + API + SPA), environment
+> variables, and service URLs.
+
 ## Related repositories
 
 | Repo | Role | Link |
@@ -34,7 +38,7 @@ A Spring Boot REST API for managing users, theaters, screens, movies, shows, and
 - Active normal users can submit one feedback per movie.
 - Feedback retrieval for a movie.
 
-The current controller layer exposes 17 endpoints. Ticket booking and seat-reservation endpoints are not currently exposed by the controllers, and there are no movie, theater, show, or seat listing endpoints. Proposed catalog, showtime, booking, and profile endpoints are tracked in [`docs/BACKEND_GAPS.md`](docs/BACKEND_GAPS.md).
+The current controller layer exposes 17 endpoints. Ticket booking and seat-reservation endpoints are not currently exposed by the controllers, and there are no movie, theater, show, or seat listing endpoints.
 
 ## Tech Stack
 
@@ -61,7 +65,7 @@ Install the following before running the application:
 ### Option A — Docker
 
 A `Dockerfile` and a compose stack covering MySQL, the API, and the frontend live in the parent
-directory alongside both repositories. See [`../DOCKER.md`](../DOCKER.md).
+directory alongside both repositories — see the [root README](../README.md).
 
 ```bash
 cd ..
@@ -101,7 +105,7 @@ export DB_USERNAME=root
 export DB_PASSWORD=root
 ```
 
-Never use the `dev` profile in a deployed environment. Production must use `JPA_DDL_AUTO=validate` (the base default) and follow the reviewed migration guidance in [`docs/production-migration.md`](docs/production-migration.md).
+Never use the `dev` profile in a deployed environment. Production must use `JPA_DDL_AUTO=validate` (the base default) and follow a reviewed, versioned migration process before starting the application.
 
 ### 3. Configure JWT and CORS
 
@@ -124,7 +128,7 @@ This assumes `SPRING_PROFILES_ACTIVE=dev` was exported in step 2. The applicatio
 
 ### Existing MySQL databases
 
-The Java renames did not rename the `user_details` or `shows_table` tables. An existing database may need no SQL change. Back it up, inspect its unique indexes, and run with the base configuration's `JPA_DDL_AUTO=validate` in staging before deploying. Do not use the `dev` profile's automatic schema update on important data. See the [upgrade checklist](docs/production-migration.md#upgrading-an-existing-mysql-database).
+The Java renames did not rename the `user_details` or `shows_table` tables. An existing database may need no SQL change. Back it up, inspect its unique indexes, and run with the base configuration's `JPA_DDL_AUTO=validate` in staging before deploying. Do not use the `dev` profile's automatic schema update on important data.
 
 ## API conventions
 
@@ -421,11 +425,9 @@ Errors raised in controllers and services are handled by `GlobalExceptionHandler
 
 ## Testing
 
-Run the test suite with Maven:
-
-```bash
-mvn test
-```
+This repository currently has no automated test sources (`src/test` is not present), so
+`mvn test` runs an empty suite. The `spring-boot-starter-test` and H2 test-scoped dependencies are
+declared in `pom.xml` and ready for tests to be added.
 
 ## Dependencies
 
