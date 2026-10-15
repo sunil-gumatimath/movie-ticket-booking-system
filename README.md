@@ -34,7 +34,7 @@ A Spring Boot REST API for managing users, theaters, screens, movies, shows, and
 - Active normal users can submit one feedback per movie.
 - Feedback retrieval for a movie.
 
-The current controller layer exposes 17 endpoints. Ticket booking and seat-reservation endpoints are not currently exposed by the controllers, and there are no movie, theater, show, or seat listing endpoints.
+The current controller layer exposes 17 endpoints. Ticket booking and seat-reservation endpoints are not currently exposed by the controllers, and there are no movie, theater, show, or seat listing endpoints. Proposed catalog, showtime, booking, and profile endpoints are tracked in [`docs/BACKEND_GAPS.md`](docs/BACKEND_GAPS.md).
 
 ## Tech Stack
 

@@ -197,5 +197,5 @@ The application deliberately fails startup when `JWT_SECRET` is absent or too sh
 
 ## Additional schema requirements
 
-- Audit columns created_by/updated_by on screen, 	heater, shows_table, and eedback must accept at least 320 characters because they store the caller's normalized email.
+- Audit columns created_by/updated_by on screen, theater, shows_table, and feedback must accept at least 320 characters because they store the caller's normalized email.
 
