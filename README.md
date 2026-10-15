@@ -375,7 +375,7 @@ Role checks use `@PreAuthorize` on controllers. Resource ownership (which theate
 
 The application uses MySQL and contains these main entities:
 
-- **Users:** user accounts and roles.
+- **Users:** user accounts and roles, stored via joined-table inheritance — the `user_details` base table with the `users` and `theater_owner` subtype tables.
 - **Theaters:** cinema locations managed by theater owners.
 - **Screens:** theater halls with screen type, capacity, and row information.
 - **Movies:** movie catalog data.
@@ -403,7 +403,7 @@ Validation and application errors use an error structure with these properties:
 }
 ```
 
-Every error, including security errors raised before a controller runs, populates `statusCode`, `error_message`, a UTC `timestamp`, and the request `path`. Validation errors also include `data`. `rejectedValue` is omitted for password fields. Clients should use the HTTP status code and `error_message` for application errors.
+Every error, including security errors raised before a controller runs, populates `statusCode`, `error_message`, a UTC `timestamp`, and the request `path`. Validation errors also include `data`. `rejectedValue` is `null` for password fields. Clients should use the HTTP status code and `error_message` for application errors.
 
 Common HTTP status codes:
 
