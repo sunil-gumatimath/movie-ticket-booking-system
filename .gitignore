@@ -45,4 +45,8 @@ pnpm-debug.log*
 lerna-debug.log*
 vite.log
 vitest.log
-.gitattributes
+
+### Environment / secrets ###
+.env
+.env.*
+!.env.example
