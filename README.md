@@ -69,9 +69,11 @@ cp .env.example .env   # then set JWT_SECRET
 docker compose up --build
 ```
 
-The image is multi-stage: `maven:3.9-eclipse-temurin-21` resolves dependencies and packages the
-jar, then only the runtime JRE and the jar are copied into `eclipse-temurin:21-jre-alpine`. It runs
-as a non-root user and exposes a healthcheck against `/v3/api-docs`.
+The image is multi-stage: `maven:3.9-eclipse-temurin-17` resolves dependencies and packages the
+jar, then only the runtime JRE and the jar are copied into `eclipse-temurin:17-jre-alpine`. It runs
+as a non-root user and exposes a healthcheck against `/actuator/health`. The image bakes in no
+Spring profile, so it starts with the production-safe base configuration; the compose stack opts
+into the `dev` profile for local runs.
 
 ### Option B — local development
 
@@ -129,6 +131,7 @@ The Java renames did not rename the `user_details` or `shows_table` tables. An e
 ### Production deployment
 
 - Keep `JPA_DDL_AUTO=validate` (the base default) and never activate the `dev` profile in a deployed environment — the `dev` profile auto-updates the schema and logs at `DEBUG`.
+- The container image sets no Spring profile and therefore starts with this safe base configuration. The compose stack sets `SPRING_PROFILES_ACTIVE=dev` for local runs only; override it in any real deployment.
 - No migration tool (Flyway/Liquibase) is bundled. Apply schema changes with a reviewed, versioned migration process before starting the application, and validate it against a staging copy first.
 - Supply a fresh, environment-specific `JWT_SECRET` (never commit it) and set `CORS_ALLOWED_ORIGINS` to your frontend's origin.
 
@@ -154,7 +157,7 @@ The application is configured entirely through environment variables (see `appli
 - Request bodies use JSON and should be sent with `Content-Type: application/json`.
 - IDs and path variables are strings.
 - `POST /register` and `POST /login` are the only public application endpoints.
-- Swagger, OpenAPI, and related webjars documentation routes are also public.
+- The health endpoint (`/actuator/health`) and the Swagger/OpenAPI documentation routes are also public.
 - Every other application endpoint requires a valid JWT unless a stricter role is listed.
 - Send the JWT returned by `POST /login` in the `Authorization` header.
 
@@ -213,7 +216,7 @@ Registration request:
 
 Registration always creates `ROLE_USER`. The response data contains `userId`, `username`, `email`, and `userRole`; it does not return the password or phone number. Privileged accounts must be provisioned through a trusted process because no public promotion endpoint exists.
 
-Registration constraints: email must be a Gmail address (validated case-insensitively); username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–64 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past. A soft-deleted account's email address can be reused for a new registration.
+Registration constraints: email must be a Gmail address (validated case-insensitively); username may contain letters, digits, and underscores; phone number must be ten digits and start with `7`, `8`, or `9`; password must be 8–64 characters with upper/lowercase letters, a digit, and a special character; date of birth must be in the past. A soft-deleted account's email address can be reused for a new registration; soft deletion preserves the account row and only archives its email address.
 
 Update profile request:
 
@@ -381,6 +384,10 @@ Public application routes:
 - `POST /register`
 - `POST /login`
 
+Public operational routes:
+
+- `/actuator/health`
+
 Public documentation routes:
 
 - `/swagger-ui/**`
@@ -450,7 +457,7 @@ declared in `pom.xml` and ready for tests to be added.
 
 ## Dependencies
 
-Key dependencies include Spring Web, Spring Data JPA, Spring Security, JJWT, MySQL Connector/J, Lombok, Spring Validation, and springdoc-openapi.
+Key dependencies include Spring Web, Spring Data JPA, Spring Security, Spring Boot Actuator, JJWT, MySQL Connector/J, Lombok, Spring Validation, and springdoc-openapi.
 
 
 
