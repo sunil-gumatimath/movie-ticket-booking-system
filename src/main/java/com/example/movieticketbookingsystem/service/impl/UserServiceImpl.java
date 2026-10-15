@@ -37,9 +37,6 @@ public class UserServiceImpl implements UserService {
             throw new ConflictException(EMAIL_TAKEN);
         }
 
-        // Free the email address from any previously soft-deleted account so it can be reused.
-        userRepository.deleteByEmailAndIsDeletedTrue(email);
-
         AppUser user = userMapper.toEntity(request, email);
         user.setPassword(passwordEncoder.encode(request.password()));
 
@@ -67,7 +64,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void softDelete(String userId) {
-        findActiveUser(userId).softDelete();
+        AppUser user = findActiveUser(userId);
+        user.softDelete();
+        // Move the email aside so the address becomes reusable, without deleting the
+        // account (and whatever feedback, theaters, etc. still reference it). The
+        // unique user id keeps the archived address unique.
+        user.setEmail(archivedEmail(user.getUserId()));
+    }
+
+    private static String archivedEmail(String userId) {
+        return "deleted+" + userId + "@removed.invalid";
     }
 
     /** Loads the target account after checking the caller may act on it. Deleted accounts are treated as absent. */
