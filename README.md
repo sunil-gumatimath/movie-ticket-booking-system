@@ -126,6 +126,29 @@ This assumes `SPRING_PROFILES_ACTIVE=dev` was exported in step 2. The applicatio
 
 The Java renames did not rename the `user_details` or `shows_table` tables. An existing database may need no SQL change. Back it up, inspect its unique indexes, and run with the base configuration's `JPA_DDL_AUTO=validate` in staging before deploying. Do not use the `dev` profile's automatic schema update on important data.
 
+### Production deployment
+
+- Keep `JPA_DDL_AUTO=validate` (the base default) and never activate the `dev` profile in a deployed environment — the `dev` profile auto-updates the schema and logs at `DEBUG`.
+- No migration tool (Flyway/Liquibase) is bundled. Apply schema changes with a reviewed, versioned migration process before starting the application, and validate it against a staging copy first.
+- Supply a fresh, environment-specific `JWT_SECRET` (never commit it) and set `CORS_ALLOWED_ORIGINS` to your frontend's origin.
+
+## Configuration
+
+The application is configured entirely through environment variables (see `application.yml`, with `dev` overrides in `application-dev.yml`):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | *(unset)* | Set to `dev` for local development only. |
+| `DB_HOST` | `localhost` | MySQL host. |
+| `DB_PORT` | `3306` | MySQL port. |
+| `DB_NAME` | `movie-ticket-booking-app-db` | Database name. |
+| `DB_USERNAME` | *(required)* | MySQL user (`dev` defaults to `root`). |
+| `DB_PASSWORD` | *(required)* | MySQL password (`dev` defaults to `root`). |
+| `JPA_DDL_AUTO` | `validate` | Hibernate DDL mode (`dev` defaults to `update`). |
+| `JWT_SECRET` | *(required)* | Base64 secret that decodes to at least 64 bytes (HS512). |
+| `JWT_EXPIRATION` | `86400000` | Token lifetime in milliseconds (24 hours). |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated allowed origins (`dev` allows `5173` and `3000`). |
+
 ## API conventions
 
 - Request bodies use JSON and should be sent with `Content-Type: application/json`.
