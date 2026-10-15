@@ -31,4 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Maven build logs ###
+mvn.log
+mvn.err
+mvn.log.*
+mvn.err.*
 .gitattributes
